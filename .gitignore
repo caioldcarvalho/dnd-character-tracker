@@ -1,0 +1,36 @@
+# Rust
+/target
+**/*.rs.bk
+*.pdb
+
+# Node / SvelteKit / Tauri (frontend — added when the shell is scaffolded)
+node_modules
+/.svelte-kit
+/build
+/dist
+/src-tauri/target
+/src-tauri/gen
+
+# Generated TS bindings are committed on purpose (drift guard); nothing to ignore there.
+
+# Editor / OS
+.DS_Store
+*.swp
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Claude Code — shared settings (.claude/settings.json) are committed; the
+# per-developer .local override is not.
+.claude/settings.local.json
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# cogitlog — commit the reasoning history (sessions/*.jsonl, index.jsonl), but
+# ignore the ephemeral machine-local session pointer and any binary DB.
+.cogitlog/current
+.cogitlog/*.sqlite
+.cogitlog/*.sqlite-*
