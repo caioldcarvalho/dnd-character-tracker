@@ -1,0 +1,48 @@
+{
+  "id": "evoker",
+  "name": "Evoker",
+  "class": "wizard",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "evocation-savant",
+          "name": "Evocation Savant",
+          "description": "Whenever you gain a Wizard level, you can add two Evocation spells to your spellbook for free; copying Evocation spells costs half the usual time and gold."
+        },
+        {
+          "id": "sculpt-spells",
+          "name": "Sculpt Spells",
+          "description": "When you cast an Evocation spell that affects others you can see, you can protect a number of them equal to 1 + the spell's level; they automatically succeed on their save and take no damage."
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "potent-cantrip",
+          "name": "Potent Cantrip",
+          "description": "When a creature succeeds on a saving throw against your cantrip, it still takes half the cantrip's damage (if any) and suffers no other effect."
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "empowered-evocation",
+          "name": "Empowered Evocation",
+          "description": "You can add your Intelligence modifier to one damage roll of any Wizard Evocation spell you cast."
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "overchannel",
+          "name": "Overchannel",
+          "description": "When you cast a Wizard spell of levels 1–5 that deals damage, you can deal maximum damage. After the first use per Long Rest, you take increasing necrotic damage each time."
+        }
+      ]
+    }
+  }
+}

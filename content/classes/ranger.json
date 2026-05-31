@@ -1,0 +1,319 @@
+{
+  "id": "ranger",
+  "name": "Ranger",
+  "hit_die": 10,
+  "saving_throws": ["str", "dex"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "wis",
+    "progression": "half",
+    "preparation": "prepared",
+    "prepared_per_level": {
+      "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 6, "7": 7, "8": 7, "9": 9, "10": 9,
+      "11": 10, "12": 10, "13": 11, "14": 11, "15": 12, "16": 12, "17": 14, "18": 14, "19": 15, "20": 15
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "favored-enemy",
+          "name": "Favored Enemy",
+          "description": "You always have the Hunter's Mark spell prepared. You can cast it without expending a spell slot a number of times equal to your Wisdom modifier (minimum once), and you regain all expended uses when you finish a Long Rest.",
+          "spell_grants": [
+            { "spell": "hunters-mark", "always_prepared": true }
+          ],
+          "resources": [
+            {
+              "id": "favored-enemy",
+              "name": "Favored Enemy (Hunter's Mark)",
+              "kind": "points",
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "ability-mod", "ability": "wis" },
+                  { "expr": "literal", "value": 1 }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        },
+        {
+          "id": "ranger-spellcasting",
+          "name": "Spellcasting",
+          "description": "You have learned to channel the magical essence of nature to cast spells, using Wisdom. You are a half-caster: prepare a number of Ranger spells after a Long Rest, with spell slots progressing at half the rate of a full caster."
+        },
+        {
+          "id": "ranger-weapon-mastery",
+          "name": "Weapon Mastery",
+          "description": "Your training lets you use the mastery properties of two kinds of weapons of your choice (more at higher levels). You can change the choices when you finish a Long Rest.",
+          "contributions": [
+            {
+              "target": { "kind": "weapon-masteries-known" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "ranger" } },
+                "table": [[1, 2], [6, 3], [10, 4], [14, 5]]
+              },
+              "note": "Weapon Mastery"
+            }
+          ],
+          "choices": [
+            {
+              "id": "ranger-weapon-mastery-1",
+              "prompt": "Choose two weapons whose mastery property you can use",
+              "choose": 2,
+              "options": {
+                "kind": "weapon-mastery",
+                "from": ["longbow", "shortbow", "shortsword", "longsword", "rapier", "scimitar", "handaxe", "spear", "dagger", "greatsword"]
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "ranger-skills",
+          "prompt": "Choose three skills",
+          "choose": 3,
+          "options": {
+            "kind": "skills",
+            "from": ["animal-handling", "athletics", "insight", "investigation", "nature", "perception", "stealth", "survival"]
+          }
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "ranger-fighting-style",
+          "name": "Fighting Style",
+          "description": "You gain a Fighting Style feat of your choice. Whenever you gain a Ranger level, you can replace it with a different Fighting Style feat.",
+          "category": "fighting-style",
+          "choices": [
+            {
+              "id": "ranger-fighting-style",
+              "prompt": "Choose a Fighting Style",
+              "choose": 1,
+              "options": { "kind": "feat", "category": "fighting-style" }
+            }
+          ]
+        },
+        {
+          "id": "deft-explorer",
+          "name": "Deft Explorer",
+          "description": "You gain Expertise in one of your skill proficiencies, and you learn two languages of your choice."
+        }
+      ]
+    },
+    "3": {
+      "features": [
+        {
+          "id": "ranger-subclass-feature",
+          "name": "Ranger Subclass",
+          "description": "You gain a Ranger subclass of your choice, gaining its features now and at higher Ranger levels."
+        }
+      ],
+      "choices": [
+        {
+          "id": "ranger-subclass-3",
+          "prompt": "Choose a Ranger subclass",
+          "choose": 1,
+          "options": { "kind": "subclass" }
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        {
+          "id": "ranger-asi-4",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "5": {
+      "features": [
+        {
+          "id": "ranger-extra-attack",
+          "name": "Extra Attack",
+          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "contributions": [
+            {
+              "target": { "kind": "attacks-per-action" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "ranger" } },
+                "table": [[1, 1], [5, 2]]
+              },
+              "note": "Extra Attack"
+            }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "roving",
+          "name": "Roving",
+          "description": "Your Speed increases by 10 feet while you aren't wearing Heavy armor. You also have a Climb Speed and a Swim Speed equal to your Speed.",
+          "contributions": [
+            {
+              "target": { "kind": "speed", "of": "walk" },
+              "op": "add",
+              "value": { "expr": "literal", "value": 10 },
+              "note": "Roving"
+            }
+          ]
+        }
+      ]
+    },
+    "8": {
+      "choices": [
+        {
+          "id": "ranger-asi-8",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "9": {
+      "features": [
+        {
+          "id": "ranger-expertise",
+          "name": "Expertise",
+          "description": "You gain Expertise in two of your skill proficiencies of your choice, such as Perception and Survival.",
+          "choices": [
+            {
+              "id": "ranger-expertise-9",
+              "prompt": "Gain Expertise in two skills",
+              "choose": 2,
+              "options": {
+                "kind": "expertise",
+                "from": ["animal-handling", "athletics", "insight", "investigation", "nature", "perception", "stealth", "survival"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "tireless",
+          "name": "Tireless",
+          "description": "As a Magic action, give yourself Temporary Hit Points equal to 1d8 plus your Wisdom modifier (minimum of 1). You can use this a number of times equal to your Wisdom modifier (minimum once), regaining all uses on a Long Rest. Whenever you finish a Short Rest, your Exhaustion level decreases by 1.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "tireless",
+              "name": "Tireless",
+              "kind": "dice",
+              "die": 8,
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "ability-mod", "ability": "wis" },
+                  { "expr": "literal", "value": 1 }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "choices": [
+        {
+          "id": "ranger-asi-12",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "13": {
+      "features": [
+        {
+          "id": "ranger-expertise-2",
+          "name": "Expertise",
+          "description": "You gain Expertise in two more of your skill proficiencies of your choice.",
+          "choices": [
+            {
+              "id": "ranger-expertise-13",
+              "prompt": "Gain Expertise in two more skills",
+              "choose": 2,
+              "options": {
+                "kind": "expertise",
+                "from": ["animal-handling", "athletics", "insight", "investigation", "nature", "perception", "stealth", "survival"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "relentless-hunter",
+          "name": "Relentless Hunter",
+          "description": "Taking damage can't break your Concentration on Hunter's Mark."
+        }
+      ]
+    },
+    "16": {
+      "choices": [
+        {
+          "id": "ranger-asi-16",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "17": {
+      "features": [
+        {
+          "id": "precise-hunter",
+          "name": "Precise Hunter",
+          "description": "You have Advantage on attack rolls against the creature currently marked by your Hunter's Mark."
+        }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "feral-senses",
+          "name": "Feral Senses",
+          "description": "Your connection to the forces of nature grants you Blindsight with a range of 30 feet."
+        }
+      ]
+    },
+    "19": {
+      "choices": [
+        {
+          "id": "ranger-epic-boon",
+          "prompt": "Epic Boon (or a feat)",
+          "choose": 1,
+          "options": { "kind": "feat", "category": "epic-boon" }
+        }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "foe-slayer",
+          "name": "Foe Slayer",
+          "description": "The damage die of your Hunter's Mark is a d10 rather than a d6, and you don't need Concentration to maintain the spell."
+        }
+      ]
+    }
+  }
+}

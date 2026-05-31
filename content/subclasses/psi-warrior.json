@@ -1,0 +1,75 @@
+{
+  "id": "psi-warrior",
+  "name": "Psi Warrior",
+  "class": "fighter",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "psionic-power",
+          "name": "Psionic Power",
+          "description": "You harbor a wellspring of psionic energy, represented by your Energy Dice. You have a number of Energy Dice equal to twice your Proficiency Bonus, and the die size grows as you gain Fighter levels (d6, then d8 at 5, d10 at 11, d12 at 17). You regain one Energy Die when you roll Initiative and have none, and all of them when you finish a Short or Long Rest. You can spend these dice on Protective Field, Psionic Strike, and Telekinetic Movement.",
+          "resources": [
+            {
+              "id": "energy-dice",
+              "name": "Energy Dice",
+              "kind": "dice",
+              "die": 6,
+              "die_scaling": { "3": 6, "5": 8, "11": 10, "17": 12 },
+              "max": {
+                "expr": "scaled",
+                "per": { "expr": "literal", "value": 2 },
+                "by": { "expr": "stat", "id": { "kind": "proficiency-bonus" } }
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "telekinetic-adept",
+          "name": "Telekinetic Adept",
+          "description": "You gain the Psi-Powered Leap and Telekinetic Thrust abilities, letting you propel yourself with psionic energy and knock targets of your Psionic Strike Prone or push them 10 feet."
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "guarded-mind",
+          "name": "Guarded Mind",
+          "description": "You have Resistance to Psychic damage. If you start your turn with the Frightened or Charmed condition, you can spend one Energy Die to end every such condition on yourself.",
+          "contributions": [
+            {
+              "target": { "kind": "saving-throw", "of": "int" },
+              "effect": "advantage",
+              "when": { "if": "effect-active", "id": "vs-psychic" },
+              "note": "Guarded Mind"
+            }
+          ]
+        }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "bulwark-of-force",
+          "name": "Bulwark of Force",
+          "description": "As a Bonus Action, you can shield yourself and allies you can see within 30 feet with telekinetic force, giving each Half Cover for 1 minute. Usable a number of times equal to your Proficiency Bonus per Long Rest."
+        }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "telekinetic-master",
+          "name": "Telekinetic Master",
+          "description": "You can cast Telekinesis without a spell slot once per Long Rest (and with Energy Dice or spell slots otherwise). While concentrating on it, you can make one weapon attack as a Bonus Action on your turn."
+        }
+      ]
+    }
+  }
+}

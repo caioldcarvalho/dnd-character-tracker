@@ -1,0 +1,103 @@
+[
+  {
+    "id": "ability-score-improvement",
+    "name": "Ability Score Improvement",
+    "description": "Increase one ability score by 2, or two ability scores by 1 each. You can't raise a score above 20 with this feat.",
+    "choices": [
+      {
+        "id": "asi-feat",
+        "prompt": "Increase one ability by 2, or two abilities by 1",
+        "choose": 2,
+        "options": { "kind": "ability-score-increase" }
+      }
+    ]
+  },
+  {
+    "id": "resilient",
+    "name": "Resilient",
+    "description": "Increase one ability score by 1 (max 20) and gain proficiency in that ability's saving throws.",
+    "choices": [
+      {
+        "id": "resilient-ability",
+        "prompt": "Choose an ability: +1 and save proficiency",
+        "choose": 1,
+        "options": {
+          "kind": "named",
+          "from": [
+            { "id": "str", "name": "Strength", "contributions": [ { "target": { "kind": "ability-score", "of": "str" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "str" } ] },
+            { "id": "dex", "name": "Dexterity", "contributions": [ { "target": { "kind": "ability-score", "of": "dex" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "dex" } ] },
+            { "id": "con", "name": "Constitution", "contributions": [ { "target": { "kind": "ability-score", "of": "con" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "con" } ] },
+            { "id": "int", "name": "Intelligence", "contributions": [ { "target": { "kind": "ability-score", "of": "int" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "int" } ] },
+            { "id": "wis", "name": "Wisdom", "contributions": [ { "target": { "kind": "ability-score", "of": "wis" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "wis" } ] },
+            { "id": "cha", "name": "Charisma", "contributions": [ { "target": { "kind": "ability-score", "of": "cha" }, "op": "add", "value": { "expr": "literal", "value": 1 }, "note": "Resilient" } ], "proficiencies": [ { "kind": "saving-throw", "ability": "cha" } ] }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "war-caster",
+    "name": "War Caster",
+    "description": "Increase your spellcasting ability by 1 (max 20). You have Advantage on Constitution saves to maintain Concentration, can perform somatic components with weapons/shield in hand, and can cast a spell as an Opportunity Attack."
+  },
+  {
+    "id": "great-weapon-master",
+    "name": "Great Weapon Master",
+    "description": "When you score a Critical Hit or reduce a creature to 0 HP with a Heavy melee weapon, you can make one melee attack as a Bonus Action. Before a Heavy-weapon attack you can take a -? penalty for +PB damage. Also +1 Strength or Constitution.",
+    "contributions": [
+      {
+        "target": { "kind": "weapon-damage-bonus", "of": "melee" },
+        "op": "add",
+        "value": { "expr": "stat", "id": { "kind": "proficiency-bonus" } },
+        "when": { "if": "effect-active", "id": "gwm-heavy-attack" },
+        "note": "GWM (heavy attack)"
+      }
+    ]
+  },
+  {
+    "id": "sharpshooter",
+    "name": "Sharpshooter",
+    "description": "Your ranged attacks ignore Long range penalties and half/three-quarters cover. Before a ranged weapon attack you can take a -? penalty for +PB damage. Also +1 Dexterity.",
+    "contributions": [
+      {
+        "target": { "kind": "weapon-damage-bonus", "of": "ranged" },
+        "op": "add",
+        "value": { "expr": "stat", "id": { "kind": "proficiency-bonus" } },
+        "when": { "if": "effect-active", "id": "sharpshooter-attack" },
+        "note": "Sharpshooter"
+      }
+    ]
+  },
+  {
+    "id": "mobile",
+    "name": "Mobile",
+    "description": "Your Speed increases by 10 feet, difficult terrain doesn't cost extra movement when you Dash, and you don't provoke Opportunity Attacks from a creature you've made a melee attack against this turn.",
+    "contributions": [
+      {
+        "target": { "kind": "speed", "of": "walk" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 10 },
+        "note": "Mobile"
+      }
+    ]
+  },
+  {
+    "id": "observant",
+    "name": "Observant",
+    "description": "Increase your Intelligence or Wisdom by 1 (max 20). You gain a +5 bonus to your Passive Perception and Passive Investigation, and you can read lips.",
+    "contributions": [
+      {
+        "target": { "kind": "passive-score", "of": "perception" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 5 },
+        "note": "Observant"
+      },
+      {
+        "target": { "kind": "passive-score", "of": "investigation" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 5 },
+        "note": "Observant"
+      }
+    ]
+  }
+]

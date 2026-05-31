@@ -1,0 +1,60 @@
+{
+  "id": "warrior-of-the-open-hand",
+  "name": "Warrior of the Open Hand",
+  "class": "monk",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "open-hand-technique",
+          "name": "Open Hand Technique",
+          "description": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of these effects on that target: Addle (it can't make Opportunity Attacks until the start of its next turn), Push (it must succeed on a Strength saving throw or be pushed up to 15 feet away from you), or Topple (it must succeed on a Dexterity saving throw or have the Prone condition)."
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "wholeness-of-body",
+          "name": "Wholeness of Body",
+          "description": "As a Bonus Action, you can roll your Martial Arts die and regain Hit Points equal to the number rolled plus your Wisdom modifier (minimum of 1 Hit Point). You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "wholeness-of-body",
+              "name": "Wholeness of Body",
+              "kind": "points",
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "wis" }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "features": [
+        {
+          "id": "fleet-step",
+          "name": "Fleet Step",
+          "description": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately after that Bonus Action."
+        }
+      ]
+    },
+    "17": {
+      "features": [
+        {
+          "id": "quivering-palm",
+          "name": "Quivering Palm",
+          "description": "When you hit a creature with an Unarmed Strike, you can spend 4 Focus Points to start imperceptible vibrations in its body that last for a number of days equal to your Monk level. You can take an action to end the vibrations while on the same plane of existence as the target, forcing it to make a Constitution saving throw: on a failure it drops to 0 Hit Points, and on a success it takes 10d12 Force damage.",
+          "activation": "activated"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "id": "circle-of-the-moon",
+  "name": "Circle of the Moon",
+  "class": "druid",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "circle-forms",
+          "name": "Circle Forms",
+          "description": "The rites of your circle grant you the ability to transform into mightier animal forms. While in a Wild Shape form, your AC equals 13 + your Wisdom modifier if that is higher, and you can expend a spell slot when you Wild Shape to gain temporary Hit Points equal to 5 times the slot's level. The maximum Challenge Rating of beasts you can assume equals your Circle Forms value.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "circle-forms-max-cr" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "druid" } },
+                "table": [[3, 1], [6, 2]]
+              },
+              "note": "Circle Forms"
+            }
+          ]
+        },
+        {
+          "id": "circle-of-the-moon-spells-3",
+          "name": "Circle of the Moon Spells",
+          "description": "Your connection to the moon's cycle grants you spells that are always prepared: Cure Wounds and Moonbeam.",
+          "spell_grants": [
+            { "spell": "cure-wounds", "always_prepared": true },
+            { "spell": "moonbeam", "always_prepared": true }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "improved-circle-forms",
+          "name": "Improved Circle Forms",
+          "description": "While in a Wild Shape form, you can use a Bonus Action to expend a use of Wild Shape to regain Hit Points, and you add your Wisdom modifier (minimum +1) to the damage of your Wild Shape attacks.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "wild-shape-attack-damage-bonus" },
+              "op": "add",
+              "value": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "wis" }
+                ]
+              },
+              "note": "Improved Circle Forms"
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "moonlight-step",
+          "name": "Moonlight Step",
+          "description": "You can use a Bonus Action to teleport up to 30 feet to an unoccupied space you can see, gaining Advantage on your next attack roll this turn. You can use this a number of times equal to your Wisdom modifier (minimum once), regaining all expended uses on a Long Rest, and you can expend a spell slot to regain one use.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "moonlight-step",
+              "name": "Moonlight Step",
+              "kind": "points",
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "wis" }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "lunar-form",
+          "name": "Lunar Form",
+          "description": "The power of the moon suffuses your animal forms. While in a Wild Shape form, once per turn when you hit a creature with an attack, you deal an extra 2d10 Radiant damage. You can also use Moonlight Step to teleport a willing creature within 5 feet of you alongside you.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "lunar-form-radiant-dice" },
+              "op": "base",
+              "value": { "expr": "literal", "value": 2 },
+              "note": "Lunar Form"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

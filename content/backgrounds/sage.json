@@ -1,0 +1,9 @@
+{
+  "id": "sage",
+  "name": "Sage",
+  "description": "You spent years studying. Ability Scores: Constitution, Intelligence, Wisdom.",
+  "abilities": ["con", "int", "wis"],
+  "skills": ["arcana", "history"],
+  "tools": ["calligraphers-supplies"],
+  "origin_feat": "magic-initiate-wizard"
+}

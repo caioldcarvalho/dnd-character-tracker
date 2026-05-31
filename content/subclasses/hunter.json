@@ -1,0 +1,71 @@
+{
+  "id": "hunter",
+  "name": "Hunter",
+  "class": "ranger",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "hunters-prey",
+          "name": "Hunter's Prey",
+          "description": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.",
+          "choices": [
+            {
+              "id": "hunter-hunters-prey-3",
+              "prompt": "Choose a Hunter's Prey option",
+              "choose": 1,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "colossus-slayer", "name": "Colossus Slayer" },
+                  { "id": "horde-breaker", "name": "Horde Breaker" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "defensive-tactics",
+          "name": "Defensive Tactics",
+          "description": "You gain one of the following feature options of your choice. Whenever you finish a Short or Long Rest, you can replace the chosen option with the other one.",
+          "choices": [
+            {
+              "id": "hunter-defensive-tactics-7",
+              "prompt": "Choose a Defensive Tactics option",
+              "choose": 1,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "escape-the-horde", "name": "Escape the Horde" },
+                  { "id": "multiattack-defense", "name": "Multiattack Defense" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "features": [
+        {
+          "id": "superior-hunters-prey",
+          "name": "Superior Hunter's Prey",
+          "description": "Once per turn when you deal damage to a creature marked by your Hunter's Mark, you can deal that spell's extra damage to a different creature you can see within 30 feet of the first creature and within the spell's range."
+        }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "superior-hunters-defense",
+          "name": "Superior Hunter's Defense",
+          "description": "When you take damage, you can take a Reaction to give yourself Resistance to that damage and any other damage of the same type until the end of the current turn."
+        }
+      ]
+    }
+  }
+}

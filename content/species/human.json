@@ -1,0 +1,47 @@
+{
+  "id": "human",
+  "name": "Human",
+  "speed": 30,
+  "size": "Medium",
+  "traits": [
+    {
+      "id": "human-resourceful",
+      "name": "Resourceful",
+      "description": "You gain Heroic Inspiration whenever you finish a Long Rest."
+    },
+    {
+      "id": "human-skillful",
+      "name": "Skillful",
+      "description": "You gain proficiency in one skill of your choice.",
+      "choices": [
+        {
+          "id": "human-skill",
+          "prompt": "Choose a skill proficiency",
+          "choose": 1,
+          "options": {
+            "kind": "skills",
+            "from": [
+              "acrobatics", "animal-handling", "arcana", "athletics", "deception",
+              "history", "insight", "intimidation", "investigation", "medicine",
+              "nature", "perception", "performance", "persuasion", "religion",
+              "sleight-of-hand", "stealth", "survival"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "human-versatile",
+      "name": "Versatile",
+      "description": "You gain an Origin feat of your choice.",
+      "choices": [
+        {
+          "id": "human-origin-feat",
+          "prompt": "Choose an Origin feat",
+          "choose": 1,
+          "options": { "kind": "feat", "category": "origin" }
+        }
+      ]
+    }
+  ]
+}

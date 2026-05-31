@@ -1,0 +1,204 @@
+{
+  "id": "fighter",
+  "name": "Fighter",
+  "hit_die": 10,
+  "saving_throws": ["str", "con"],
+  "subclass_level": 3,
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "fighter-fighting-style",
+          "name": "Fighting Style",
+          "description": "You adopt a particular style of fighting as your specialty, gaining a Fighting Style feat of your choice.",
+          "choices": [
+            {
+              "id": "fighter-fighting-style",
+              "prompt": "Choose a Fighting Style",
+              "choose": 1,
+              "options": { "kind": "feat", "category": "fighting-style" }
+            }
+          ]
+        },
+        {
+          "id": "second-wind",
+          "name": "Second Wind",
+          "description": "As a Bonus Action, regain 1d10 + Fighter level Hit Points. Regain expended uses on a Short or Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "second-wind",
+              "name": "Second Wind",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[1, 2], [4, 3], [10, 4]]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        },
+        {
+          "id": "weapon-mastery",
+          "name": "Weapon Mastery",
+          "description": "Your training lets you use the mastery properties of three kinds of weapons of your choice (more at higher levels).",
+          "contributions": [
+            {
+              "target": { "kind": "weapon-masteries-known" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[1, 3], [4, 4], [10, 5], [16, 6]]
+              },
+              "note": "Weapon Mastery"
+            }
+          ],
+          "choices": [
+            {
+              "id": "fighter-weapon-mastery",
+              "prompt": "Choose three weapons whose mastery property you can use",
+              "choose": 3,
+              "options": {
+                "kind": "weapon-mastery",
+                "from": ["greatsword", "longsword", "longbow", "rapier", "shortsword", "maul", "battleaxe", "warhammer"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "action-surge",
+          "name": "Action Surge",
+          "description": "On your turn, take one additional action. Once per Short or Long Rest (twice at level 17).",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "action-surge",
+              "name": "Action Surge",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[2, 1], [17, 2]]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        },
+        {
+          "id": "tactical-mind",
+          "name": "Tactical Mind",
+          "description": "When you fail an ability check, you can expend a use of Second Wind to add 1d10 to the check."
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        {
+          "id": "fighter-asi-4",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "5": {
+      "features": [
+        {
+          "id": "extra-attack",
+          "name": "Extra Attack",
+          "description": "You can attack twice, instead of once, whenever you take the Attack action (three times at level 11, four at level 20).",
+          "contributions": [
+            {
+              "target": { "kind": "attacks-per-action" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[5, 2], [11, 3], [20, 4]]
+              },
+              "note": "Extra Attack"
+            }
+          ]
+        },
+        {
+          "id": "tactical-shift",
+          "name": "Tactical Shift",
+          "description": "When you activate Second Wind, you can move up to half your Speed without provoking Opportunity Attacks."
+        }
+      ]
+    },
+    "6": {
+      "choices": [
+        { "id": "fighter-asi-6", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "8": {
+      "choices": [
+        { "id": "fighter-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "9": {
+      "features": [
+        {
+          "id": "indomitable",
+          "name": "Indomitable",
+          "description": "Reroll a failed saving throw; you must use the new roll. Uses scale with level. Regain on a Long Rest.",
+          "activation": "reaction",
+          "resources": [
+            {
+              "id": "indomitable",
+              "name": "Indomitable",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[9, 1], [13, 2], [17, 3]]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        },
+        {
+          "id": "tactical-master",
+          "name": "Tactical Master",
+          "description": "When you attack with a weapon whose mastery you can use, you can replace its property with Push, Sap, or Slow."
+        }
+      ]
+    },
+    "12": {
+      "choices": [
+        { "id": "fighter-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "13": {
+      "features": [
+        {
+          "id": "studied-attacks",
+          "name": "Studied Attacks",
+          "description": "If you miss a creature with an attack roll, you have Advantage on your next attack roll against it before the end of your next turn."
+        }
+      ]
+    },
+    "14": {
+      "choices": [
+        { "id": "fighter-asi-14", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "16": {
+      "choices": [
+        { "id": "fighter-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "19": {
+      "choices": [
+        { "id": "fighter-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } }
+      ]
+    }
+  }
+}

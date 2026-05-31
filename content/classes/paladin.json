@@ -1,0 +1,284 @@
+{
+  "id": "paladin",
+  "name": "Paladin",
+  "hit_die": 10,
+  "saving_throws": ["wis", "cha"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "half",
+    "preparation": "prepared",
+    "prepared_per_level": {
+      "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 6, "7": 7, "8": 7, "9": 9, "10": 9,
+      "11": 10, "12": 10, "13": 11, "14": 11, "15": 12, "16": 12, "17": 14, "18": 14, "19": 15, "20": 15
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "paladin-spellcasting",
+          "name": "Spellcasting",
+          "description": "You can cast prepared Paladin spells using Charisma as your spellcasting ability. You prepare a number of spells from the Paladin list that scales with your level."
+        },
+        {
+          "id": "lay-on-hands",
+          "name": "Lay on Hands",
+          "description": "You have a pool of healing power that replenishes when you finish a Long Rest. With that pool, you can restore a total number of Hit Points equal to five times your Paladin level. As an action, you can touch a creature and draw power from the pool to restore Hit Points, or to neutralize one poison or one disease for 5 points each.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "lay-on-hands",
+              "name": "Lay on Hands",
+              "kind": "points",
+              "max": {
+                "expr": "scaled",
+                "per": { "expr": "literal", "value": 5 },
+                "by": { "expr": "stat", "id": { "kind": "class-level", "of": "paladin" } }
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        },
+        {
+          "id": "paladin-weapon-mastery",
+          "name": "Weapon Mastery",
+          "description": "Your training with weapons lets you use the mastery properties of two kinds of weapons of your choice with which you have proficiency.",
+          "contributions": [
+            {
+              "target": { "kind": "weapon-masteries-known" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "paladin" } },
+                "table": [[1, 2]]
+              },
+              "note": "Weapon Mastery"
+            }
+          ],
+          "choices": [
+            {
+              "id": "paladin-weapon-mastery-1",
+              "prompt": "Choose two weapons whose mastery property you can use",
+              "choose": 2,
+              "options": {
+                "kind": "weapon-mastery",
+                "from": ["greatsword", "longsword", "longbow", "rapier", "shortsword", "maul", "battleaxe", "warhammer", "halberd", "glaive", "flail", "mace"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "paladin-fighting-style",
+          "name": "Fighting Style",
+          "description": "You gain a Fighting Style feat of your choice. Whenever you gain a Paladin level, you can replace the feat with another Fighting Style feat.",
+          "category": "fighting-style",
+          "choices": [
+            {
+              "id": "paladin-fighting-style-2",
+              "prompt": "Choose a Fighting Style",
+              "choose": 1,
+              "options": { "kind": "feat", "category": "fighting-style" }
+            }
+          ]
+        },
+        {
+          "id": "paladin-spellcasting-prepared",
+          "name": "Prepared Spells",
+          "description": "Your access to prepared Paladin spells increases as you gain levels in this class."
+        }
+      ]
+    },
+    "3": {
+      "features": [
+        {
+          "id": "channel-divinity",
+          "name": "Channel Divinity",
+          "description": "You can channel divine energy to fuel magical effects from your Oath. You start with two such effects: Divine Sense and an Oath-specific option. You can use this feature a number of times shown by your level, regaining all expended uses when you finish a Short or Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "channel-divinity",
+              "name": "Channel Divinity",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "paladin" } },
+                "table": [[3, 2], [11, 3]]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        { "id": "paladin-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "5": {
+      "features": [
+        {
+          "id": "extra-attack",
+          "name": "Extra Attack",
+          "description": "You can attack twice, instead of once, whenever you take the Attack action on your turn.",
+          "contributions": [
+            {
+              "target": { "kind": "attacks-per-action" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "paladin" } },
+                "table": [[5, 2]]
+              },
+              "note": "Extra Attack"
+            }
+          ]
+        },
+        {
+          "id": "faithful-steed",
+          "name": "Faithful Steed",
+          "description": "You can cast Find Steed without expending a spell slot once per long rest, and you always have it prepared."
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "aura-of-protection",
+          "name": "Aura of Protection",
+          "description": "You radiate a protective aura while not incapacitated. You and allies within 10 feet (30 feet at level 18) gain a bonus to saving throws equal to your Charisma modifier (minimum +1).",
+          "contributions": [
+            {
+              "target": { "kind": "saving-throw", "of": "str" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "dex" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "con" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "int" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "wis" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "cha" },
+              "op": "add",
+              "value": { "expr": "max", "terms": [ { "expr": "ability-mod", "ability": "cha" }, { "expr": "literal", "value": 1 } ] },
+              "note": "Aura of Protection"
+            }
+          ]
+        }
+      ]
+    },
+    "8": {
+      "choices": [
+        { "id": "paladin-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "9": {
+      "features": [
+        {
+          "id": "abjure-foes",
+          "name": "Abjure Foes",
+          "description": "As a Magic action, you can expend one use of Channel Divinity to overwhelm foes with awe. Affected creatures can be Frightened and lose their ability to take Reactions and Bonus Actions."
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "aura-of-courage",
+          "name": "Aura of Courage",
+          "description": "You and your allies within your Aura of Protection can't be Frightened while you are not incapacitated. If a creature is Frightened while in the aura, that condition doesn't affect it there."
+        }
+      ]
+    },
+    "11": {
+      "features": [
+        {
+          "id": "radiant-strikes",
+          "name": "Radiant Strikes",
+          "description": "Your strikes carry supernatural power. When you hit a target with an attack roll using a weapon or an unarmed strike, the target takes an extra 1d8 Radiant damage.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "radiant-strikes-dice" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "paladin" } },
+                "table": [[11, 1]]
+              },
+              "note": "Radiant Strikes (1d8 Radiant)"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "choices": [
+        { "id": "paladin-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "restoring-touch",
+          "name": "Restoring Touch",
+          "description": "When you use Lay on Hands on a creature, you can also end one of several conditions affecting it: Blinded, Charmed, Deafened, Frightened, Paralyzed, or Stunned. Spend 5 Hit Points from your healing pool per condition."
+        }
+      ]
+    },
+    "16": {
+      "choices": [
+        { "id": "paladin-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "aura-expansion",
+          "name": "Aura Expansion",
+          "description": "Your Aura of Protection now extends 30 feet from you."
+        }
+      ]
+    },
+    "19": {
+      "choices": [
+        { "id": "paladin-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "paladin-subclass-capstone",
+          "name": "Oath Capstone",
+          "description": "You gain the level 20 feature of your Sacred Oath."
+        }
+      ]
+    }
+  }
+}

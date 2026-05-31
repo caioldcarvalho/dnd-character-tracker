@@ -1,0 +1,56 @@
+{
+  "id": "college-of-lore",
+  "name": "College of Lore",
+  "class": "bard",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "lore-bonus-proficiencies",
+          "name": "Bonus Proficiencies",
+          "description": "When you join the College of Lore at level 3, you gain proficiency with three skills of your choice.",
+          "choices": [
+            {
+              "id": "lore-bonus-proficiencies",
+              "prompt": "Choose three skills",
+              "choose": 3,
+              "options": {
+                "kind": "skills",
+                "from": [
+                  "acrobatics", "animal-handling", "arcana", "athletics", "deception", "history",
+                  "insight", "intimidation", "investigation", "medicine", "nature", "perception",
+                  "performance", "persuasion", "religion", "sleight-of-hand", "stealth", "survival"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "cutting-words",
+          "name": "Cutting Words",
+          "description": "You learn to use your wit to distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet makes a damage roll or succeeds on an ability check or attack roll, you can take a Reaction to expend one use of your Bardic Inspiration, roll the Bardic Inspiration die, and subtract the number rolled from the creature's roll, potentially turning a hit into a miss or a success into a failure.",
+          "activation": "reaction"
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "magical-discoveries",
+          "name": "Magical Discoveries",
+          "description": "You learn two spells of your choice from any combination of the Cleric, Druid, and Wizard spell lists. A learned spell must be a cantrip or a spell for which you have spell slots. These spells count as Bard spells for you and are always prepared, not counting against the number of spells you can prepare."
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "peerless-skill",
+          "name": "Peerless Skill",
+          "description": "When you fail an ability check or attack roll, you can expend one use of Bardic Inspiration, roll the Bardic Inspiration die, and add the number rolled to the d20, potentially turning the failure into a success. If the check or attack still fails, that use of Bardic Inspiration isn't expended.",
+          "activation": "activated"
+        }
+      ]
+    }
+  }
+}

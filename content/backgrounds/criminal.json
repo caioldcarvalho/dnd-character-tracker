@@ -1,0 +1,9 @@
+{
+  "id": "criminal",
+  "name": "Criminal",
+  "description": "You made your living in the shadows. Ability Scores: Dexterity, Constitution, Intelligence.",
+  "abilities": ["dex", "con", "int"],
+  "skills": ["sleight-of-hand", "stealth"],
+  "tools": ["thieves-tools"],
+  "origin_feat": "alert"
+}

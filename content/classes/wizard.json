@@ -1,0 +1,101 @@
+{
+  "id": "wizard",
+  "name": "Wizard",
+  "hit_die": 6,
+  "saving_throws": ["int", "wis"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "int",
+    "progression": "full",
+    "preparation": "spellbook",
+    "prepared_per_level": {
+      "1": 4, "2": 5, "3": 6, "4": 7, "5": 9, "6": 10, "7": 11, "8": 12, "9": 14, "10": 15,
+      "11": 16, "12": 16, "13": 17, "14": 18, "15": 19, "16": 21, "17": 22, "18": 23, "19": 24, "20": 25
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "wizard-spellcasting",
+          "name": "Spellcasting",
+          "description": "You cast spells from your spellbook using Intelligence. Prepare a number of spells from your book after a Long Rest, and learn two new spells whenever you gain a Wizard level."
+        },
+        {
+          "id": "ritual-adept",
+          "name": "Ritual Adept",
+          "description": "You can cast any spell in your spellbook with the Ritual tag as a Ritual without preparing it."
+        },
+        {
+          "id": "arcane-recovery",
+          "name": "Arcane Recovery",
+          "description": "Once per day after a Short Rest, recover expended spell slots with a combined level up to half your Wizard level (rounded up); none can be level 6+.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "arcane-recovery",
+              "name": "Arcane Recovery",
+              "kind": "points",
+              "max": { "expr": "literal", "value": 1 },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "wizard-skills",
+          "prompt": "Choose two skills",
+          "choose": 2,
+          "options": {
+            "kind": "skills",
+            "from": ["arcana", "history", "insight", "investigation", "medicine", "nature", "religion"]
+          }
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "scholar",
+          "name": "Scholar",
+          "description": "You have Expertise in one Arcana, History, Investigation, Medicine, Nature, or Religion skill you are proficient in.",
+          "choices": [
+            {
+              "id": "wizard-scholar",
+              "prompt": "Gain Expertise in one skill",
+              "choose": 1,
+              "options": {
+                "kind": "expertise",
+                "from": ["arcana", "history", "investigation", "medicine", "nature", "religion"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "4": { "choices": [ { "id": "wizard-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "8": { "choices": [ { "id": "wizard-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "12": { "choices": [ { "id": "wizard-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "16": { "choices": [ { "id": "wizard-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "18": {
+      "features": [
+        {
+          "id": "spell-mastery",
+          "name": "Spell Mastery",
+          "description": "Choose a level 1 and a level 2 spell in your spellbook; you can cast them at their lowest level without expending a slot."
+        }
+      ]
+    },
+    "19": { "choices": [ { "id": "wizard-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } } ] },
+    "20": {
+      "features": [
+        {
+          "id": "signature-spells",
+          "name": "Signature Spells",
+          "description": "Choose two level 3 spells as Signature Spells; you always have them prepared and can cast each once per Short or Long Rest without a slot."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "id": "draconic-sorcery",
+  "name": "Draconic Sorcery",
+  "class": "sorcerer",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "draconic-resilience",
+          "name": "Draconic Resilience",
+          "description": "The magic in your body manifests draconic traits. Your Hit Point maximum increases by an amount equal to your sorcerer level. Additionally, while you aren't wearing armor, your base Armor Class equals 10 plus your Dexterity and Charisma modifiers.",
+          "contributions": [
+            {
+              "target": { "kind": "max-hit-points" },
+              "op": "add",
+              "value": { "expr": "stat", "id": { "kind": "character-level" } },
+              "note": "Draconic Resilience"
+            },
+            {
+              "target": { "kind": "armor-class" },
+              "op": "base",
+              "value": {
+                "expr": "sum",
+                "terms": [
+                  { "expr": "literal", "value": 10 },
+                  { "expr": "ability-mod", "ability": "dex" },
+                  { "expr": "ability-mod", "ability": "cha" }
+                ]
+              },
+              "when": { "if": "unarmored" },
+              "note": "Draconic Resilience"
+            }
+          ]
+        },
+        {
+          "id": "draconic-spells",
+          "name": "Draconic Spells",
+          "description": "When you reach a sorcerer level specified in the Draconic Spells table, you thereafter always have the listed spells prepared.",
+          "spell_grants": [
+            { "spell": "alter-self", "always_prepared": true },
+            { "spell": "chromatic-orb", "always_prepared": true },
+            { "spell": "command", "always_prepared": true },
+            { "spell": "dragons-breath", "always_prepared": true }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "elemental-affinity",
+          "name": "Elemental Affinity",
+          "description": "Your draconic magic has an affinity with a damage type associated with dragons. Choose Acid, Cold, Fire, Lightning, or Poison. You gain Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell.",
+          "choices": [
+            {
+              "id": "draconic-elemental-affinity",
+              "prompt": "Choose a draconic damage type",
+              "choose": 1,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "acid", "name": "Acid" },
+                  { "id": "cold", "name": "Cold" },
+                  { "id": "fire", "name": "Fire" },
+                  { "id": "lightning", "name": "Lightning" },
+                  { "id": "poison", "name": "Poison" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "dragon-wings",
+          "name": "Dragon Wings",
+          "description": "As a Bonus Action, you can sprout dragon wings from your back, gaining a Fly Speed equal to your Speed. The wings last for 1 hour or until you retract them. You can't manifest them while wearing armor unless it is made to accommodate them."
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "dragon-companion",
+          "name": "Dragon Companion",
+          "description": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, regaining the ability to do so when you finish a Long Rest."
+        }
+      ]
+    }
+  }
+}

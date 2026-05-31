@@ -1,0 +1,273 @@
+{
+  "id": "bard",
+  "name": "Bard",
+  "hit_die": 8,
+  "saving_throws": ["dex", "cha"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "full",
+    "preparation": "prepared",
+    "prepared_per_level": {
+      "1": 4, "2": 5, "3": 6, "4": 7, "5": 9, "6": 10, "7": 11, "8": 12, "9": 14, "10": 15,
+      "11": 16, "12": 16, "13": 17, "14": 17, "15": 18, "16": 18, "17": 19, "18": 20, "19": 20, "20": 22
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "bard-spellcasting",
+          "name": "Spellcasting",
+          "description": "You have learned to cast spells through your bardic arts. Charisma is your spellcasting ability for your Bard spells. You prepare a list of Bard spells, choosing from the Bard spell list."
+        },
+        {
+          "id": "bardic-inspiration",
+          "name": "Bardic Inspiration",
+          "description": "As a Bonus Action, you can give one creature within 60 feet (other than yourself) a Bardic Inspiration die (a d6, growing as you level). Within the next hour, that creature can add the die to one ability check, attack roll, or saving throw it makes. You have a number of uses equal to your Charisma modifier (minimum 1), and you regain expended uses on a Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "bardic-inspiration",
+              "name": "Bardic Inspiration",
+              "kind": "dice",
+              "die": 6,
+              "die_scaling": { "1": 6, "5": 8, "10": 10, "15": 12 },
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "cha" }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "bard-skills",
+          "prompt": "Choose three skills",
+          "choose": 3,
+          "options": {
+            "kind": "skills",
+            "from": [
+              "acrobatics", "animal-handling", "arcana", "athletics", "deception", "history",
+              "insight", "intimidation", "investigation", "medicine", "nature", "perception",
+              "performance", "persuasion", "religion", "sleight-of-hand", "stealth", "survival"
+            ]
+          }
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "expertise-2",
+          "name": "Expertise",
+          "description": "Choose two of your skill proficiencies. Your Proficiency Bonus is doubled for any ability check you make that uses either of the chosen skills.",
+          "choices": [
+            {
+              "id": "bard-expertise-2",
+              "prompt": "Choose two skills to gain Expertise",
+              "choose": 2,
+              "options": {
+                "kind": "expertise",
+                "from": [
+                  "acrobatics", "animal-handling", "arcana", "athletics", "deception", "history",
+                  "insight", "intimidation", "investigation", "medicine", "nature", "perception",
+                  "performance", "persuasion", "religion", "sleight-of-hand", "stealth", "survival"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "jack-of-all-trades",
+          "name": "Jack of All Trades",
+          "description": "You can add half your Proficiency Bonus (round down) to any ability check you make that uses a skill or tool with which you lack proficiency.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "jack-of-all-trades" },
+              "op": "base",
+              "value": {
+                "expr": "floor-div",
+                "num": { "expr": "stat", "id": { "kind": "proficiency-bonus" } },
+                "den": { "expr": "literal", "value": 2 }
+              },
+              "note": "Jack of All Trades"
+            }
+          ]
+        },
+        {
+          "id": "song-of-rest",
+          "name": "Song of Rest",
+          "description": "You can use soothing music or oration to help revitalize wounded allies during a Short Rest. If you or any allies who can hear your performance regain Hit Points during the Short Rest by spending Hit Point Dice, each of those creatures regains extra Hit Points (a d6, increasing as you level).",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "song-of-rest-die" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "bard" } },
+                "table": [[2, 6], [9, 8], [13, 10], [17, 12]]
+              },
+              "note": "Song of Rest"
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "choices": [
+        {
+          "id": "bard-college",
+          "prompt": "Choose a Bard College",
+          "choose": 1,
+          "options": { "kind": "subclass" }
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        {
+          "id": "bard-asi-4",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "5": {
+      "features": [
+        {
+          "id": "font-of-inspiration",
+          "name": "Font of Inspiration",
+          "description": "You now regain all your expended uses of Bardic Inspiration when you finish a Short or Long Rest. In addition, you can expend a spell slot (no action required) to regain one expended use of Bardic Inspiration.",
+          "resources": [
+            {
+              "id": "bardic-inspiration",
+              "name": "Bardic Inspiration",
+              "kind": "dice",
+              "die": 6,
+              "die_scaling": { "1": 6, "5": 8, "10": 10, "15": 12 },
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "cha" }
+                ]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "countercharm",
+          "name": "Countercharm",
+          "description": "You can use musical notes or words of power to disrupt mind-influencing effects. As a Magic action, you can start a performance that lasts until the end of your next turn. During that time, you and your allies within 30 feet have Advantage on saving throws to avoid or end the Frightened or Charmed condition."
+        }
+      ]
+    },
+    "8": {
+      "choices": [
+        {
+          "id": "bard-asi-8",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "9": {
+      "features": [
+        {
+          "id": "expertise-9",
+          "name": "Expertise",
+          "description": "Choose two more of your skill proficiencies. Your Proficiency Bonus is doubled for any ability check you make that uses either of the chosen skills.",
+          "choices": [
+            {
+              "id": "bard-expertise-9",
+              "prompt": "Choose two more skills to gain Expertise",
+              "choose": 2,
+              "options": {
+                "kind": "expertise",
+                "from": [
+                  "acrobatics", "animal-handling", "arcana", "athletics", "deception", "history",
+                  "insight", "intimidation", "investigation", "medicine", "nature", "perception",
+                  "performance", "persuasion", "religion", "sleight-of-hand", "stealth", "survival"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "magical-secrets",
+          "name": "Magical Secrets",
+          "description": "You have collected magical knowledge from a wide spectrum of disciplines. Whenever you prepare Bard spells, you can choose from the Cleric, Druid, and Wizard spell lists in addition to the Bard spell list; the chosen spells count as Bard spells for you."
+        }
+      ]
+    },
+    "12": {
+      "choices": [
+        {
+          "id": "bard-asi-12",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "16": {
+      "choices": [
+        {
+          "id": "bard-asi-16",
+          "prompt": "Ability Score Improvement (or a feat)",
+          "choose": 2,
+          "options": { "kind": "ability-score-increase" }
+        }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "superior-inspiration",
+          "name": "Superior Inspiration",
+          "description": "When you roll Initiative, you regain expended uses of Bardic Inspiration until you have two if you have fewer than that."
+        }
+      ]
+    },
+    "19": {
+      "choices": [
+        {
+          "id": "bard-epic-boon",
+          "prompt": "Epic Boon (or a feat)",
+          "choose": 1,
+          "options": { "kind": "feat", "category": "epic-boon" }
+        }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "words-of-creation",
+          "name": "Words of Creation",
+          "description": "You have mastered two of the Words of Creation: the words of life and death. You always have the Power Word Heal and Power Word Kill spells prepared. When you cast either spell, you can target a second creature within 10 feet of the first.",
+          "spell_grants": [
+            { "spell": "power-word-heal", "always_prepared": true },
+            { "spell": "power-word-kill", "always_prepared": true }
+          ]
+        }
+      ]
+    }
+  }
+}

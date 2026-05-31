@@ -1,0 +1,86 @@
+{
+  "id": "fiend-patron",
+  "name": "Fiend Patron",
+  "class": "warlock",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "fiend-dark-ones-blessing",
+          "name": "Dark One's Blessing",
+          "description": "When you reduce an enemy to 0 Hit Points, or when an enemy within 10 feet of you drops to 0 Hit Points, you gain Temporary Hit Points equal to your Charisma modifier plus your Warlock level (minimum of 1 Temporary Hit Point). You also gain this benefit when you enter the area of your patron's influence by taking the Magic action to cast a Warlock spell."
+        },
+        {
+          "id": "fiend-expanded-spells",
+          "name": "Fiend Spells",
+          "description": "The Fiend lets you choose from an expanded list of spells; the following spells are added to the Warlock spell list for you and are always prepared, not counting against the number of spells you can prepare.",
+          "spell_grants": [
+            { "spell": "burning-hands", "always_prepared": true },
+            { "spell": "command", "always_prepared": true },
+            { "spell": "scorching-ray", "always_prepared": true },
+            { "spell": "suggestion", "always_prepared": true },
+            { "spell": "fireball", "always_prepared": true },
+            { "spell": "stinking-cloud", "always_prepared": true },
+            { "spell": "fire-shield", "always_prepared": true },
+            { "spell": "wall-of-fire", "always_prepared": true },
+            { "spell": "geas", "always_prepared": true },
+            { "spell": "insect-plague", "always_prepared": true }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "fiend-dark-ones-own-luck",
+          "name": "Dark One's Own Luck",
+          "description": "You can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the roll but before any of the roll's effects occur. You can use this feature a number of times equal to your Charisma modifier (minimum of once), and you regain all expended uses when you finish a Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "dark-ones-own-luck",
+              "name": "Dark One's Own Luck",
+              "kind": "points",
+              "max": {
+                "expr": "max",
+                "terms": [
+                  { "expr": "literal", "value": 1 },
+                  { "expr": "ability-mod", "ability": "cha" }
+                ]
+              },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "fiend-fiendish-resilience",
+          "name": "Fiendish Resilience",
+          "description": "Choose one damage type, other than Force, whenever you finish a Short or Long Rest. You have Resistance to that damage type until you choose a different one with this feature."
+        }
+      ]
+    },
+    "14": {
+      "features": [
+        {
+          "id": "fiend-hurl-through-hell",
+          "name": "Hurl Through Hell",
+          "description": "Once per turn when you hit a creature with an attack roll, you can try to instantaneously transport the target through the Lower Planes. The target must succeed on a Charisma saving throw against your Spell Save DC, or it vanishes and hurtles through a nightmare landscape until the end of your next turn, taking 8d10 Psychic damage if it isn't a Fiend. Once you use this feature, you can't do so again until you finish a Long Rest, unless you spend a Pact Magic spell slot (no action required) to restore your use of it.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "hurl-through-hell",
+              "name": "Hurl Through Hell",
+              "kind": "points",
+              "max": { "expr": "literal", "value": 1 },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

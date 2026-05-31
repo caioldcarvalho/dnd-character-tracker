@@ -1,0 +1,57 @@
+[
+  {
+    "id": "defense",
+    "name": "Defense (Fighting Style)",
+    "description": "While you are wearing armor, you gain a +1 bonus to Armor Class.",
+    "contributions": [
+      {
+        "target": { "kind": "armor-class" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 1 },
+        "when": { "if": "wearing-armor" },
+        "note": "Defense"
+      }
+    ]
+  },
+  {
+    "id": "dueling",
+    "name": "Dueling (Fighting Style)",
+    "description": "When you are wielding a melee weapon in one hand and no other weapon, you gain a +2 bonus to damage rolls with that weapon.",
+    "contributions": [
+      {
+        "target": { "kind": "weapon-damage-bonus", "of": "melee" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 2 },
+        "note": "Dueling"
+      }
+    ]
+  },
+  {
+    "id": "great-weapon-fighting",
+    "name": "Great Weapon Fighting (Fighting Style)",
+    "description": "When you roll a 1 or 2 on a damage die for an attack with a two-handed or versatile melee weapon, you can reroll the die and must use the new roll."
+  },
+  {
+    "id": "archery",
+    "name": "Archery (Fighting Style)",
+    "description": "You gain a +2 bonus to attack rolls you make with ranged weapons.",
+    "contributions": [
+      {
+        "target": { "kind": "weapon-attack-bonus", "of": "ranged" },
+        "op": "add",
+        "value": { "expr": "literal", "value": 2 },
+        "note": "Archery"
+      }
+    ]
+  },
+  {
+    "id": "two-weapon-fighting",
+    "name": "Two-Weapon Fighting (Fighting Style)",
+    "description": "When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack."
+  },
+  {
+    "id": "protection",
+    "name": "Protection (Fighting Style)",
+    "description": "When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your Reaction to impose Disadvantage on the attack roll. You must be wielding a Shield."
+  }
+]

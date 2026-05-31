@@ -1,0 +1,136 @@
+{
+  "id": "battle-master",
+  "name": "Battle Master",
+  "class": "fighter",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "combat-superiority",
+          "name": "Combat Superiority",
+          "description": "You learn maneuvers fueled by Superiority Dice. You have four d8s; the dice grow to d10 at level 10 and d12 at level 18, and you gain more at levels 7 and 15. Regain expended dice on a Short or Long Rest.",
+          "resources": [
+            {
+              "id": "superiority-dice",
+              "name": "Superiority Dice",
+              "kind": "dice",
+              "die": 8,
+              "die_scaling": { "3": 8, "10": 10, "18": 12 },
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "fighter" } },
+                "table": [[3, 4], [7, 5], [15, 6]]
+              },
+              "recharge": "short-rest"
+            }
+          ],
+          "choices": [
+            {
+              "id": "battle-master-maneuvers-3",
+              "prompt": "Learn three maneuvers",
+              "choose": 3,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "trip-attack", "name": "Trip Attack" },
+                  { "id": "riposte", "name": "Riposte" },
+                  { "id": "precision-attack", "name": "Precision Attack" },
+                  { "id": "menacing-attack", "name": "Menacing Attack" },
+                  { "id": "disarming-attack", "name": "Disarming Attack" },
+                  { "id": "sweeping-attack", "name": "Sweeping Attack" },
+                  { "id": "parry", "name": "Parry" },
+                  { "id": "pushing-attack", "name": "Pushing Attack" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "student-of-war",
+          "name": "Student of War",
+          "description": "You gain proficiency with one type of Artisan's Tools and one skill from a short list.",
+          "choices": [
+            {
+              "id": "battle-master-student-of-war",
+              "prompt": "Gain proficiency in one skill",
+              "choose": 1,
+              "options": {
+                "kind": "skills",
+                "from": ["arcana", "history", "medicine", "nature", "religion", "survival", "sleight-of-hand"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "know-your-enemy",
+          "name": "Know Your Enemy",
+          "description": "Spend 1 minute observing a creature to learn whether it is your equal, superior, or inferior in two characteristics of your choice."
+        }
+      ],
+      "choices": [
+        {
+          "id": "battle-master-maneuvers-7",
+          "prompt": "Learn two more maneuvers",
+          "choose": 2,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "goading-attack", "name": "Goading Attack" },
+              { "id": "feinting-attack", "name": "Feinting Attack" },
+              { "id": "lunging-attack", "name": "Lunging Attack" },
+              { "id": "rally", "name": "Rally" },
+              { "id": "commanders-strike", "name": "Commander's Strike" }
+            ]
+          }
+        }
+      ]
+    },
+    "10": {
+      "features": [
+        {
+          "id": "improved-combat-superiority-10",
+          "name": "Improved Combat Superiority",
+          "description": "Your Superiority Dice turn into d10s."
+        }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "relentless",
+          "name": "Relentless",
+          "description": "When you roll Initiative and have no Superiority Dice, you regain one."
+        }
+      ],
+      "choices": [
+        {
+          "id": "battle-master-maneuvers-15",
+          "prompt": "Learn two more maneuvers",
+          "choose": 2,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "bait-and-switch", "name": "Bait and Switch" },
+              { "id": "evasive-footwork", "name": "Evasive Footwork" },
+              { "id": "quick-toss", "name": "Quick Toss" },
+              { "id": "tactical-assessment", "name": "Tactical Assessment" }
+            ]
+          }
+        }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "improved-combat-superiority-18",
+          "name": "Improved Combat Superiority",
+          "description": "Your Superiority Dice turn into d12s."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "oath-of-devotion",
+  "name": "Oath of Devotion",
+  "class": "paladin",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "oath-of-devotion-spells",
+          "name": "Oath of Devotion Spells",
+          "description": "You always have certain spells prepared once you reach the levels noted: Protection from Evil and Good, Shield of Faith (3), Aid, Zone of Truth (5), Beacon of Hope, Dispel Magic (9), Freedom of Movement, Guardian of Faith (13), Commune, Flame Strike (17). These don't count against your number of prepared spells.",
+          "spell_grants": [
+            { "spell": "protection-from-evil-and-good", "always_prepared": true },
+            { "spell": "shield-of-faith", "always_prepared": true }
+          ]
+        },
+        {
+          "id": "sacred-weapon",
+          "name": "Channel Divinity: Sacred Weapon",
+          "description": "As a Bonus Action, you can expend one use of your Channel Divinity to imbue one weapon you are holding with positive energy. For 10 minutes, you add your Charisma modifier to attack rolls made with that weapon (minimum +1), and the weapon emits Bright Light and deals Radiant damage.",
+          "activation": "activated"
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "aura-of-devotion",
+          "name": "Aura of Devotion",
+          "description": "You and your allies within your Aura of Protection can't be Charmed while you are not incapacitated. If an ally is already Charmed when they enter the aura, that condition has no effect there.",
+          "contributions": [
+            {
+              "target": { "kind": "saving-throw", "of": "cha" },
+              "op": "base",
+              "value": { "expr": "literal", "value": 0 },
+              "effect": "advantage",
+              "note": "Aura of Devotion (immunity to Charmed)"
+            }
+          ]
+        }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "smite-of-protection",
+          "name": "Smite of Protection",
+          "description": "Your magical smite now radiates protective energy. Whenever you cast Divine Smite, you and your allies within your Aura of Protection have Half Cover until the start of your next turn."
+        }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "holy-nimbus",
+          "name": "Holy Nimbus",
+          "description": "As a Bonus Action, you can imbue your Aura of Protection with holy power for 10 minutes. While it lasts, the aura sheds Bright Light, enemies that start their turn there take Radiant damage equal to your Charisma modifier, and you have Advantage on saving throws against spells cast by fiends and undead. Once per Long Rest, recharging by expending a level 5+ spell slot.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "holy-nimbus",
+              "name": "Holy Nimbus",
+              "kind": "points",
+              "max": { "expr": "literal", "value": 1 },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

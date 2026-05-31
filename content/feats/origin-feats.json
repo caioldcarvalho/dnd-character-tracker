@@ -1,0 +1,112 @@
+[
+  {
+    "id": "tough",
+    "name": "Tough",
+    "description": "Your Hit Point maximum increases by an amount equal to twice your character level when you gain this feat. Whenever you gain a level thereafter, your Hit Point maximum increases by an additional 2 Hit Points.",
+    "contributions": [
+      {
+        "target": { "kind": "max-hit-points" },
+        "op": "add",
+        "value": {
+          "expr": "scaled",
+          "per": { "expr": "literal", "value": 2 },
+          "by": { "expr": "stat", "id": { "kind": "character-level" } }
+        },
+        "note": "Tough"
+      }
+    ]
+  },
+  {
+    "id": "alert",
+    "name": "Alert",
+    "description": "You gain a bonus to Initiative equal to your Proficiency Bonus. You can also swap Initiative with a willing ally (provided neither of you is Incapacitated).",
+    "contributions": [
+      {
+        "target": { "kind": "initiative" },
+        "op": "add",
+        "value": { "expr": "stat", "id": { "kind": "proficiency-bonus" } },
+        "note": "Alert"
+      }
+    ]
+  },
+  {
+    "id": "lucky",
+    "name": "Lucky",
+    "description": "You have a number of Luck Points equal to your Proficiency Bonus. Spend a Luck Point to give yourself Advantage on a d20 Test, or to impose Disadvantage on an attack roll against you. You regain your expended Luck Points on a Long Rest.",
+    "resources": [
+      {
+        "id": "luck-points",
+        "name": "Luck Points",
+        "kind": "points",
+        "max": { "expr": "stat", "id": { "kind": "proficiency-bonus" } },
+        "recharge": "long-rest"
+      }
+    ]
+  },
+  {
+    "id": "savage-attacker",
+    "name": "Savage Attacker",
+    "description": "Once per turn when you hit with a weapon, you can roll the weapon's damage dice twice and use either roll."
+  },
+  {
+    "id": "skilled",
+    "name": "Skilled",
+    "description": "You gain proficiency in any combination of three skills or tools of your choice.",
+    "choices": [
+      {
+        "id": "skilled-skills",
+        "prompt": "Choose three skills",
+        "choose": 3,
+        "options": {
+          "kind": "skills",
+          "from": [
+            "acrobatics", "animal-handling", "arcana", "athletics", "deception",
+            "history", "insight", "intimidation", "investigation", "medicine",
+            "nature", "perception", "performance", "persuasion", "religion",
+            "sleight-of-hand", "stealth", "survival"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "magic-initiate-wizard",
+    "name": "Magic Initiate (Wizard)",
+    "description": "You learn two cantrips and one level 1 spell from the Wizard spell list. You can cast the level 1 spell once per Long Rest without a slot (or with slots if you have them). Intelligence is your spellcasting ability for these spells.",
+    "spell_grants": [
+      { "spell": "wizard-cantrip-1", "always_prepared": true },
+      { "spell": "wizard-cantrip-2", "always_prepared": true },
+      { "spell": "wizard-level1", "always_prepared": true }
+    ]
+  },
+  {
+    "id": "magic-initiate-cleric",
+    "name": "Magic Initiate (Cleric)",
+    "description": "You learn two cantrips and one level 1 spell from the Cleric spell list. You can cast the level 1 spell once per Long Rest without a slot. Wisdom is your spellcasting ability for these spells.",
+    "spell_grants": [
+      { "spell": "cleric-cantrip-1", "always_prepared": true },
+      { "spell": "cleric-cantrip-2", "always_prepared": true },
+      { "spell": "cleric-level1", "always_prepared": true }
+    ]
+  },
+  {
+    "id": "healer",
+    "name": "Healer",
+    "description": "You can use a Healer's Kit to restore Hit Points (1d6 + 4 + the creature's number of Hit Dice) to a creature, once per creature per Short or Long Rest. You also have battle-tested precision."
+  },
+  {
+    "id": "crafter",
+    "name": "Crafter",
+    "description": "You gain proficiency with three Artisan's Tools of your choice, get a 20% discount on nonmagical items, and can craft faster during downtime."
+  },
+  {
+    "id": "musician",
+    "name": "Musician",
+    "description": "You gain proficiency with three Musical Instruments. After a Short or Long Rest, you can play to grant Heroic Inspiration to allies equal to your Proficiency Bonus."
+  },
+  {
+    "id": "tavern-brawler",
+    "name": "Tavern Brawler",
+    "description": "Your Unarmed Strike damage die is 1d4, you can reroll a 1 on it once per turn, you gain proficiency with improvised weapons, and you can push a target 5 feet when you hit with an Unarmed Strike."
+  }
+]

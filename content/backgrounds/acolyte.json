@@ -1,0 +1,9 @@
+{
+  "id": "acolyte",
+  "name": "Acolyte",
+  "description": "You devoted yourself to service in a temple. Ability Scores: Intelligence, Wisdom, Charisma.",
+  "abilities": ["int", "wis", "cha"],
+  "skills": ["insight", "religion"],
+  "tools": ["calligraphers-supplies"],
+  "origin_feat": "magic-initiate-cleric"
+}

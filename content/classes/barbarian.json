@@ -1,0 +1,163 @@
+{
+  "id": "barbarian",
+  "name": "Barbarian",
+  "hit_die": 12,
+  "saving_throws": ["str", "con"],
+  "subclass_level": 3,
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "rage",
+          "name": "Rage",
+          "description": "As a Bonus Action, enter a Rage for up to 10 minutes: bonus damage on Strength-based attacks, Advantage on Strength checks and saves, and resistance to bludgeoning, piercing, and slashing damage.",
+          "activation": { "toggle": { "default_on": false } },
+          "resources": [
+            {
+              "id": "rage",
+              "name": "Rages",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "barbarian" } },
+                "table": [[1, 2], [3, 3], [6, 4], [12, 5], [17, 6]]
+              },
+              "recharge": "long-rest"
+            }
+          ],
+          "contributions": [
+            {
+              "target": { "kind": "weapon-damage-bonus", "of": "melee" },
+              "op": "add",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "barbarian" } },
+                "table": [[1, 2], [9, 3], [16, 4]]
+              },
+              "when": { "if": "effect-active", "id": "rage" },
+              "note": "Rage"
+            },
+            {
+              "target": { "kind": "saving-throw", "of": "str" },
+              "effect": "advantage",
+              "when": { "if": "effect-active", "id": "rage" },
+              "note": "Rage"
+            },
+            {
+              "target": { "kind": "skill-bonus", "of": "athletics" },
+              "effect": "advantage",
+              "when": { "if": "effect-active", "id": "rage" },
+              "note": "Rage (Strength check)"
+            }
+          ]
+        },
+        {
+          "id": "unarmored-defense-barbarian",
+          "name": "Unarmored Defense",
+          "description": "While not wearing armor, your base Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a Shield and still gain this benefit.",
+          "contributions": [
+            {
+              "target": { "kind": "armor-class" },
+              "op": "base",
+              "value": {
+                "expr": "sum",
+                "terms": [
+                  { "expr": "literal", "value": 10 },
+                  { "expr": "ability-mod", "ability": "dex" },
+                  { "expr": "ability-mod", "ability": "con" }
+                ]
+              },
+              "when": { "if": "unarmored" },
+              "note": "Unarmored Defense"
+            }
+          ]
+        },
+        {
+          "id": "barbarian-weapon-mastery",
+          "name": "Weapon Mastery",
+          "description": "You can use the mastery properties of two kinds of weapons of your choice.",
+          "contributions": [
+            {
+              "target": { "kind": "weapon-masteries-known" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "barbarian" } },
+                "table": [[1, 2], [4, 3], [10, 4]]
+              },
+              "note": "Weapon Mastery"
+            }
+          ],
+          "choices": [
+            {
+              "id": "barbarian-weapon-mastery",
+              "prompt": "Choose two weapons whose mastery property you can use",
+              "choose": 2,
+              "options": {
+                "kind": "weapon-mastery",
+                "from": ["greataxe", "greatsword", "handaxe", "javelin", "maul", "battleaxe", "spear"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "danger-sense",
+          "name": "Danger Sense",
+          "description": "You have Advantage on Dexterity saving throws unless Incapacitated.",
+          "contributions": [
+            {
+              "target": { "kind": "saving-throw", "of": "dex" },
+              "effect": "advantage",
+              "note": "Danger Sense"
+            }
+          ]
+        },
+        {
+          "id": "reckless-attack",
+          "name": "Reckless Attack",
+          "description": "When you make your first attack on your turn, you can attack recklessly, gaining Advantage on Strength-based attack rolls this turn but giving attackers Advantage against you."
+        }
+      ]
+    },
+    "4": { "choices": [ { "id": "barbarian-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "5": {
+      "features": [
+        {
+          "id": "barbarian-extra-attack",
+          "name": "Extra Attack",
+          "description": "You can attack twice whenever you take the Attack action.",
+          "contributions": [
+            {
+              "target": { "kind": "attacks-per-action" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "barbarian" } },
+                "table": [[5, 2]]
+              },
+              "note": "Extra Attack"
+            }
+          ]
+        },
+        {
+          "id": "fast-movement",
+          "name": "Fast Movement",
+          "description": "Your Speed increases by 10 feet while you aren't wearing Heavy armor.",
+          "contributions": [
+            {
+              "target": { "kind": "speed", "of": "walk" },
+              "op": "add",
+              "value": { "expr": "literal", "value": 10 },
+              "when": { "if": "unarmored" },
+              "note": "Fast Movement"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

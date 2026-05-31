@@ -1,0 +1,312 @@
+{
+  "id": "warlock",
+  "name": "Warlock",
+  "hit_die": 8,
+  "saving_throws": ["wis", "cha"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "pact",
+    "preparation": "known",
+    "prepared_per_level": {
+      "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 7, "7": 8, "8": 9, "9": 10, "10": 10,
+      "11": 11, "12": 11, "13": 12, "14": 12, "15": 13, "16": 13, "17": 14, "18": 14, "19": 15, "20": 15
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "warlock-pact-magic",
+          "name": "Pact Magic",
+          "description": "Your arcane research and the magic bestowed on you by your patron grant you spellcasting. Charisma is your spellcasting ability. You know two cantrips and have Pact Magic spell slots. All your Pact Magic slots are the same level (which increases as you gain Warlock levels), and you regain all expended slots when you finish a Short or Long Rest. Your Spell Save DC is 8 + your Charisma modifier + your Proficiency Bonus, and your spell attack bonus is your Charisma modifier + your Proficiency Bonus.",
+          "resources": [
+            {
+              "id": "pact-slots",
+              "name": "Pact Magic Slots",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "warlock" } },
+                "table": [[1, 1], [3, 2], [11, 3], [17, 4]]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        },
+        {
+          "id": "warlock-eldritch-invocations",
+          "name": "Eldritch Invocations",
+          "description": "You have unearthed Eldritch Invocations, pieces of forbidden knowledge that imbue you with abiding magical ability. You know one invocation at level 1, and you learn more as you gain Warlock levels. Whenever you gain a Warlock level, you can replace one invocation you know with another for which you qualify.",
+          "contributions": [
+            {
+              "target": { "kind": "custom", "of": "eldritch-invocations-known" },
+              "op": "base",
+              "value": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "warlock" } },
+                "table": [[1, 1], [2, 3], [5, 5], [7, 6], [9, 7], [12, 8], [15, 9], [18, 10]]
+              },
+              "note": "Eldritch Invocations Known"
+            }
+          ],
+          "choices": [
+            {
+              "id": "warlock-invocations-1",
+              "prompt": "Learn one Eldritch Invocation",
+              "choose": 1,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "agonizing-blast", "name": "Agonizing Blast" },
+                  { "id": "armor-of-shadows", "name": "Armor of Shadows" },
+                  { "id": "devils-sight", "name": "Devil's Sight" },
+                  { "id": "eldritch-mind", "name": "Eldritch Mind" },
+                  { "id": "mask-of-many-faces", "name": "Mask of Many Faces" },
+                  { "id": "misty-visions", "name": "Misty Visions" },
+                  { "id": "pact-of-the-blade", "name": "Pact of the Blade" },
+                  { "id": "pact-of-the-chain", "name": "Pact of the Chain" },
+                  { "id": "pact-of-the-tome", "name": "Pact of the Tome" }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "warlock-skills",
+          "prompt": "Choose two skills",
+          "choose": 2,
+          "options": {
+            "kind": "skills",
+            "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]
+          }
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "warlock-magical-cunning",
+          "name": "Magical Cunning",
+          "description": "You can perform an esoteric rite for 1 minute. At the end of it, you regain expended Pact Magic spell slots, up to a number equal to half your maximum (round up). Once you use this feature, you can't do so again until you finish a Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "magical-cunning",
+              "name": "Magical Cunning",
+              "kind": "points",
+              "max": { "expr": "literal", "value": 1 },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "warlock-invocations-2",
+          "prompt": "Learn two Eldritch Invocations",
+          "choose": 2,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "agonizing-blast", "name": "Agonizing Blast" },
+              { "id": "armor-of-shadows", "name": "Armor of Shadows" },
+              { "id": "devils-sight", "name": "Devil's Sight" },
+              { "id": "eldritch-mind", "name": "Eldritch Mind" },
+              { "id": "eldritch-spear", "name": "Eldritch Spear" },
+              { "id": "mask-of-many-faces", "name": "Mask of Many Faces" },
+              { "id": "misty-visions", "name": "Misty Visions" },
+              { "id": "repelling-blast", "name": "Repelling Blast" },
+              { "id": "pact-of-the-blade", "name": "Pact of the Blade" },
+              { "id": "pact-of-the-chain", "name": "Pact of the Chain" },
+              { "id": "pact-of-the-tome", "name": "Pact of the Tome" }
+            ]
+          }
+        }
+      ]
+    },
+    "3": {
+      "choices": [
+        {
+          "id": "warlock-subclass",
+          "prompt": "Choose a Warlock subclass (Otherworldly Patron)",
+          "choose": 1,
+          "options": { "kind": "subclass" }
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        { "id": "warlock-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "5": {
+      "choices": [
+        {
+          "id": "warlock-invocations-5",
+          "prompt": "Learn two Eldritch Invocations",
+          "choose": 2,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "agonizing-blast", "name": "Agonizing Blast" },
+              { "id": "devils-sight", "name": "Devil's Sight" },
+              { "id": "eldritch-spear", "name": "Eldritch Spear" },
+              { "id": "gaze-of-two-minds", "name": "Gaze of Two Minds" },
+              { "id": "mask-of-many-faces", "name": "Mask of Many Faces" },
+              { "id": "repelling-blast", "name": "Repelling Blast" },
+              { "id": "thirsting-blade", "name": "Thirsting Blade" }
+            ]
+          }
+        }
+      ]
+    },
+    "7": {
+      "choices": [
+        {
+          "id": "warlock-invocations-7",
+          "prompt": "Learn one Eldritch Invocation",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "ascendant-step", "name": "Ascendant Step" },
+              { "id": "lifedrinker", "name": "Lifedrinker" },
+              { "id": "otherworldly-leap", "name": "Otherworldly Leap" }
+            ]
+          }
+        }
+      ]
+    },
+    "8": {
+      "choices": [
+        { "id": "warlock-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "9": {
+      "choices": [
+        {
+          "id": "warlock-invocations-9",
+          "prompt": "Learn one Eldritch Invocation",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "otherworldly-leap", "name": "Otherworldly Leap" },
+              { "id": "sculptor-of-flesh", "name": "Sculptor of Flesh" },
+              { "id": "whispers-of-the-grave", "name": "Whispers of the Grave" }
+            ]
+          }
+        }
+      ]
+    },
+    "11": {
+      "features": [
+        {
+          "id": "warlock-mystic-arcanum-6",
+          "name": "Mystic Arcanum (Level 6 Spell)",
+          "description": "Your patron grants you a magical secret called an arcanum. Choose one level 6 spell from the Warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot, and you must finish a Long Rest before you can do so again."
+        }
+      ]
+    },
+    "12": {
+      "choices": [
+        { "id": "warlock-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } },
+        {
+          "id": "warlock-invocations-12",
+          "prompt": "Learn one Eldritch Invocation",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "bewitching-whispers", "name": "Bewitching Whispers" },
+              { "id": "dreadful-word", "name": "Dreadful Word" },
+              { "id": "sculptor-of-flesh", "name": "Sculptor of Flesh" }
+            ]
+          }
+        }
+      ]
+    },
+    "13": {
+      "features": [
+        {
+          "id": "warlock-mystic-arcanum-7",
+          "name": "Mystic Arcanum (Level 7 Spell)",
+          "description": "Choose one level 7 spell from the Warlock spell list as an additional arcanum. You can cast it once without expending a spell slot, regaining the ability to do so when you finish a Long Rest."
+        }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "warlock-mystic-arcanum-8",
+          "name": "Mystic Arcanum (Level 8 Spell)",
+          "description": "Choose one level 8 spell from the Warlock spell list as an additional arcanum. You can cast it once without expending a spell slot, regaining the ability to do so when you finish a Long Rest."
+        }
+      ],
+      "choices": [
+        {
+          "id": "warlock-invocations-15",
+          "prompt": "Learn one Eldritch Invocation",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "master-of-myriad-forms", "name": "Master of Myriad Forms" },
+              { "id": "visions-of-distant-realms", "name": "Visions of Distant Realms" },
+              { "id": "witch-sight", "name": "Witch Sight" }
+            ]
+          }
+        }
+      ]
+    },
+    "16": {
+      "choices": [
+        { "id": "warlock-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "17": {
+      "features": [
+        {
+          "id": "warlock-mystic-arcanum-9",
+          "name": "Mystic Arcanum (Level 9 Spell)",
+          "description": "Choose one level 9 spell from the Warlock spell list as an additional arcanum. You can cast it once without expending a spell slot, regaining the ability to do so when you finish a Long Rest."
+        }
+      ]
+    },
+    "18": {
+      "choices": [
+        {
+          "id": "warlock-invocations-18",
+          "prompt": "Learn one Eldritch Invocation",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "master-of-myriad-forms", "name": "Master of Myriad Forms" },
+              { "id": "visions-of-distant-realms", "name": "Visions of Distant Realms" },
+              { "id": "witch-sight", "name": "Witch Sight" }
+            ]
+          }
+        }
+      ]
+    },
+    "19": {
+      "choices": [
+        { "id": "warlock-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "warlock-eldritch-master",
+          "name": "Eldritch Master",
+          "description": "When you use your Magical Cunning feature, you regain all expended Pact Magic spell slots instead of only half.",
+          "activation": "activated"
+        }
+      ]
+    }
+  }
+}

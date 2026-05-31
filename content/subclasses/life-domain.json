@@ -1,0 +1,57 @@
+{
+  "id": "life-domain",
+  "name": "Life Domain",
+  "class": "cleric",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "life-domain-spells",
+          "name": "Life Domain Spells",
+          "description": "Your connection to the positive energy of life grants you spells that are always prepared and don't count against the number of spells you can prepare.",
+          "spell_grants": [
+            { "spell": "aid", "always_prepared": true },
+            { "spell": "bless", "always_prepared": true },
+            { "spell": "cure-wounds", "always_prepared": true },
+            { "spell": "lesser-restoration", "always_prepared": true },
+            { "spell": "mass-healing-word", "always_prepared": true },
+            { "spell": "revivify", "always_prepared": true },
+            { "spell": "aura-of-life", "always_prepared": true },
+            { "spell": "death-ward", "always_prepared": true },
+            { "spell": "greater-restoration", "always_prepared": true },
+            { "spell": "mass-cure-wounds", "always_prepared": true }
+          ]
+        },
+        {
+          "id": "disciple-of-life",
+          "name": "Disciple of Life",
+          "description": "Whenever a spell you cast with a spell slot restores Hit Points to a creature, that creature regains additional Hit Points equal to 2 plus the spell slot's level."
+        },
+        {
+          "id": "preserve-life",
+          "name": "Preserve Life",
+          "description": "As a Magic action, you can expend one use of your Channel Divinity to restore a number of Hit Points equal to five times your Cleric level, divided as you choose among creatures within 30 feet of you. You can restore a creature to no more than half its Hit Point maximum this way, and you can't use it on an Undead or a Construct.",
+          "activation": "activated"
+        }
+      ]
+    },
+    "6": {
+      "features": [
+        {
+          "id": "blessed-healer",
+          "name": "Blessed Healer",
+          "description": "The healing spells you cast on others heal you as well. When you cast a spell with a spell slot that restores Hit Points to one or more creatures other than yourself, you regain Hit Points equal to 2 plus the spell slot's level."
+        }
+      ]
+    },
+    "17": {
+      "features": [
+        {
+          "id": "supreme-healing",
+          "name": "Supreme Healing",
+          "description": "When you would normally roll one or more dice to restore Hit Points to a creature with a spell or with Channel Divinity: Preserve Life, you instead use the highest number possible for each die. For example, instead of restoring 2d6 Hit Points, you restore 12."
+        }
+      ]
+    }
+  }
+}

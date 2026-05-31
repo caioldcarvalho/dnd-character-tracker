@@ -1,0 +1,49 @@
+{
+  "id": "thief",
+  "name": "Thief",
+  "class": "rogue",
+  "levels": {
+    "3": {
+      "features": [
+        {
+          "id": "thief-fast-hands",
+          "name": "Fast Hands",
+          "description": "As a Bonus Action, you can take the Utilize action to use an object, to make a Sleight of Hand check, or to use your Thieves' Tools to disarm a trap or open a lock.",
+          "activation": "activated"
+        },
+        {
+          "id": "thief-second-story-work",
+          "name": "Second-Story Work",
+          "description": "You've trained to get into especially hard-to-reach places. You gain the Climb speed equal to your Speed, and when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier."
+        }
+      ]
+    },
+    "9": {
+      "features": [
+        {
+          "id": "thief-supreme-sneak",
+          "name": "Supreme Sneak",
+          "description": "You gain the Stealth Attack Cunning Strike option, which costs 1d6. Stealth Attack: if you have the Hide action's Invisible condition, you don't reveal your presence by making a noise. You also have Advantage on Dexterity (Stealth) checks made as part of the Hide action."
+        }
+      ]
+    },
+    "13": {
+      "features": [
+        {
+          "id": "thief-use-magic-device",
+          "name": "Use Magic Device",
+          "description": "You've learned how to wring even more magic out of magic items. You can attune to up to four magic items at once, you can use any magic item that requires attunement even if its prerequisites aren't met, and you can use a Spell Scroll of a level higher than you can normally use (with a chance of failure)."
+        }
+      ]
+    },
+    "17": {
+      "features": [
+        {
+          "id": "thief-thiefs-reflexes",
+          "name": "Thief's Reflexes",
+          "description": "You are adept at laying ambushes and quickly escaping danger. You can take two turns during the first round of any combat. You take your first turn at your normal Initiative and your second turn at your Initiative minus 10."
+        }
+      ]
+    }
+  }
+}

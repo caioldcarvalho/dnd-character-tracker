@@ -1,0 +1,9 @@
+{
+  "id": "soldier",
+  "name": "Soldier",
+  "description": "You had a military life, trained for war. Ability Scores: Strength, Dexterity, Constitution.",
+  "abilities": ["str", "dex", "con"],
+  "skills": ["athletics", "intimidation"],
+  "tools": ["gaming-set"],
+  "origin_feat": "savage-attacker"
+}

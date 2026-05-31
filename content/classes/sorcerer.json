@@ -1,0 +1,110 @@
+{
+  "id": "sorcerer",
+  "name": "Sorcerer",
+  "hit_die": 6,
+  "saving_throws": ["con", "cha"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "cha",
+    "progression": "full",
+    "preparation": "known",
+    "prepared_per_level": {
+      "1": 2, "2": 4, "3": 6, "4": 7, "5": 9, "6": 10, "7": 11, "8": 12, "9": 14, "10": 15,
+      "11": 16, "12": 16, "13": 17, "14": 18, "15": 19, "16": 20, "17": 21, "18": 22, "19": 23, "20": 25
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "sorcerer-spellcasting",
+          "name": "Spellcasting",
+          "description": "You cast spells from the Sorcerer list using Charisma. You know a fixed number of spells and can swap one when you gain a level."
+        },
+        {
+          "id": "innate-sorcery",
+          "name": "Innate Sorcery",
+          "description": "As a Bonus Action, unleash innate sorcery for 1 minute: your spell save DC increases by 1 and you have Advantage on spellcasting attack rolls. Usable twice per Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "innate-sorcery",
+              "name": "Innate Sorcery",
+              "kind": "points",
+              "max": { "expr": "literal", "value": 2 },
+              "recharge": "long-rest"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "font-of-magic",
+          "name": "Font of Magic",
+          "description": "You have Sorcery Points equal to your Sorcerer level. As a Bonus Action you can convert Sorcery Points into spell slots, or expended spell slots into Sorcery Points.",
+          "resources": [
+            {
+              "id": "sorcery-points",
+              "name": "Sorcery Points",
+              "kind": "points",
+              "max": { "expr": "stat", "id": { "kind": "class-level", "of": "sorcerer" } },
+              "recharge": "long-rest"
+            }
+          ]
+        },
+        {
+          "id": "metamagic",
+          "name": "Metamagic",
+          "description": "You learn to twist your spells with Metamagic options, gaining more options at levels 10 and 17.",
+          "choices": [
+            {
+              "id": "sorcerer-metamagic-2",
+              "prompt": "Learn two Metamagic options",
+              "choose": 2,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "careful-spell", "name": "Careful Spell" },
+                  { "id": "distant-spell", "name": "Distant Spell" },
+                  { "id": "empowered-spell", "name": "Empowered Spell" },
+                  { "id": "extended-spell", "name": "Extended Spell" },
+                  { "id": "heightened-spell", "name": "Heightened Spell" },
+                  { "id": "quickened-spell", "name": "Quickened Spell" },
+                  { "id": "seeking-spell", "name": "Seeking Spell" },
+                  { "id": "subtle-spell", "name": "Subtle Spell" },
+                  { "id": "transmuted-spell", "name": "Transmuted Spell" },
+                  { "id": "twinned-spell", "name": "Twinned Spell" }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "4": { "choices": [ { "id": "sorcerer-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "5": {
+      "features": [
+        {
+          "id": "sorcerous-restoration",
+          "name": "Sorcerous Restoration",
+          "description": "When you finish a Short Rest, you can regain expended Sorcery Points up to half your Sorcerer level (once per day)."
+        }
+      ]
+    },
+    "8": { "choices": [ { "id": "sorcerer-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "12": { "choices": [ { "id": "sorcerer-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "16": { "choices": [ { "id": "sorcerer-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } } ] },
+    "19": { "choices": [ { "id": "sorcerer-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } } ] },
+    "20": {
+      "features": [
+        {
+          "id": "arcane-apotheosis",
+          "name": "Arcane Apotheosis",
+          "description": "While Innate Sorcery is active, you can use one Metamagic option on each of your turns without spending Sorcery Points."
+        }
+      ]
+    }
+  }
+}

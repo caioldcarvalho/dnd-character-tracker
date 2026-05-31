@@ -1,0 +1,194 @@
+{
+  "id": "druid",
+  "name": "Druid",
+  "hit_die": 8,
+  "saving_throws": ["int", "wis"],
+  "subclass_level": 3,
+  "spellcasting": {
+    "ability": "wis",
+    "progression": "full",
+    "preparation": "prepared",
+    "prepared_per_level": {
+      "1": 4, "2": 5, "3": 6, "4": 7, "5": 9, "6": 10, "7": 11, "8": 12, "9": 14, "10": 15,
+      "11": 16, "12": 16, "13": 17, "14": 17, "15": 18, "16": 18, "17": 19, "18": 20, "19": 21, "20": 22
+    }
+  },
+  "levels": {
+    "1": {
+      "features": [
+        {
+          "id": "druid-proficiencies",
+          "name": "Proficiencies",
+          "description": "Druids are proficient with Light armor, Shields, and Simple weapons, and with the Herbalism Kit.",
+          "proficiencies": [
+            { "kind": "armor", "armor": "light" },
+            { "kind": "armor", "armor": "shield" },
+            { "kind": "weapon", "weapon": "simple" },
+            { "kind": "tool", "tool": "herbalism-kit" }
+          ],
+          "choices": [
+            {
+              "id": "druid-skills-1",
+              "prompt": "Choose two skills",
+              "choose": 2,
+              "options": {
+                "kind": "skills",
+                "from": ["arcana", "animal-handling", "insight", "medicine", "nature", "perception", "religion", "survival"]
+              }
+            }
+          ]
+        },
+        {
+          "id": "druid-spellcasting",
+          "name": "Spellcasting",
+          "description": "You have learned to cast spells through studying the mystical forces of nature. Wisdom is your spellcasting ability. You prepare a list of druid spells that are available for you to cast."
+        },
+        {
+          "id": "druidic",
+          "name": "Druidic",
+          "description": "You know Druidic, the secret language of druids. You can speak it and use it to leave hidden messages, and you always have the Druidcraft cantrip prepared.",
+          "proficiencies": [
+            { "kind": "language", "language": "druidic" }
+          ],
+          "spell_grants": [
+            { "spell": "druidcraft", "always_prepared": true }
+          ]
+        },
+        {
+          "id": "primal-order",
+          "name": "Primal Order",
+          "description": "You have dedicated yourself to a sacred role. Choose Magician (extra cantrip and Arcana/Nature bonus) or Warden (Martial weapon proficiency and Medium armor training).",
+          "choices": [
+            {
+              "id": "druid-primal-order-1",
+              "prompt": "Choose a Primal Order",
+              "choose": 1,
+              "options": {
+                "kind": "named",
+                "from": [
+                  { "id": "magician", "name": "Magician", "proficiencies": [] },
+                  {
+                    "id": "warden",
+                    "name": "Warden",
+                    "proficiencies": [
+                      { "kind": "weapon", "weapon": "martial" },
+                      { "kind": "armor", "armor": "medium" }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "features": [
+        {
+          "id": "wild-shape",
+          "name": "Wild Shape",
+          "description": "As a Bonus Action, you can magically assume the shape of a Beast you have learned. You can use this a number of times shown by your Wild Shape pool, regaining all expended uses on a Short or Long Rest.",
+          "activation": "activated",
+          "resources": [
+            {
+              "id": "wild-shape",
+              "name": "Wild Shape",
+              "kind": "points",
+              "max": {
+                "expr": "level-table",
+                "on": { "expr": "stat", "id": { "kind": "class-level", "of": "druid" } },
+                "table": [[2, 2], [6, 3], [17, 4]]
+              },
+              "recharge": "short-rest"
+            }
+          ]
+        },
+        {
+          "id": "wild-companion",
+          "name": "Wild Companion",
+          "description": "You can expend a use of Wild Shape to cast the Find Familiar spell without a Material component. The familiar is a Fey and lasts a number of hours equal to half your druid level."
+        }
+      ]
+    },
+    "3": {
+      "choices": [
+        {
+          "id": "druid-subclass-3",
+          "prompt": "Choose a Druid subclass",
+          "choose": 1,
+          "options": { "kind": "subclass" }
+        }
+      ]
+    },
+    "4": {
+      "choices": [
+        { "id": "druid-asi-4", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "5": {
+      "features": [
+        {
+          "id": "wild-resurgence",
+          "name": "Wild Resurgence",
+          "description": "Once per turn, if you have no uses of Wild Shape left, you can give yourself one use by expending a spell slot. You can also expend a use of Wild Shape to give yourself a level 1 spell slot, once per Long Rest."
+        }
+      ]
+    },
+    "7": {
+      "features": [
+        {
+          "id": "elemental-fury-7",
+          "name": "Elemental Fury",
+          "description": "The power of the elements flows through you. Choose Potent Spellcasting (add your Wisdom modifier to the damage of your druid cantrips) or Primal Strike (your attacks deal extra elemental damage once per turn)."
+        }
+      ]
+    },
+    "8": {
+      "choices": [
+        { "id": "druid-asi-8", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "12": {
+      "choices": [
+        { "id": "druid-asi-12", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "15": {
+      "features": [
+        {
+          "id": "improved-elemental-fury",
+          "name": "Improved Elemental Fury",
+          "description": "The benefit you chose for Elemental Fury improves: Potent Spellcasting increases your druid cantrip range, and Primal Strike's extra damage increases to 2d8."
+        }
+      ]
+    },
+    "16": {
+      "choices": [
+        { "id": "druid-asi-16", "prompt": "Ability Score Improvement (or a feat)", "choose": 2, "options": { "kind": "ability-score-increase" } }
+      ]
+    },
+    "18": {
+      "features": [
+        {
+          "id": "beast-spells",
+          "name": "Beast Spells",
+          "description": "While using Wild Shape, you can cast spells, except for any spell with a Material component costing more than 0 GP."
+        }
+      ]
+    },
+    "19": {
+      "choices": [
+        { "id": "druid-epic-boon", "prompt": "Epic Boon (or a feat)", "choose": 1, "options": { "kind": "feat", "category": "epic-boon" } }
+      ]
+    },
+    "20": {
+      "features": [
+        {
+          "id": "archdruid",
+          "name": "Archdruid",
+          "description": "You can ignore the Verbal and Somatic components of your druid spells and any Material components without a cost. You can also convert unexpended uses of Wild Shape into a spell slot once per Long Rest, and you regain one use of Wild Shape when you roll Initiative with none left."
+        }
+      ]
+    }
+  }
+}

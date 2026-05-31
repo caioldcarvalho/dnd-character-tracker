@@ -1,0 +1,70 @@
+{
+  "id": "elf",
+  "name": "Elf",
+  "speed": 30,
+  "size": "Medium",
+  "traits": [
+    {
+      "id": "elf-darkvision",
+      "name": "Darkvision",
+      "description": "You have Darkvision with a range of 60 feet."
+    },
+    {
+      "id": "elf-fey-ancestry",
+      "name": "Fey Ancestry",
+      "description": "You have Advantage on saving throws you make to avoid or end the Charmed condition.",
+      "contributions": [
+        {
+          "target": { "kind": "saving-throw", "of": "wis" },
+          "effect": "advantage",
+          "when": { "if": "effect-active", "id": "vs-charm" },
+          "note": "Fey Ancestry (vs Charmed)"
+        }
+      ]
+    },
+    {
+      "id": "elf-keen-senses",
+      "name": "Keen Senses",
+      "description": "You gain proficiency in one of Insight, Perception, or Survival.",
+      "choices": [
+        {
+          "id": "elf-keen-senses",
+          "prompt": "Choose a skill proficiency",
+          "choose": 1,
+          "options": { "kind": "skills", "from": ["insight", "perception", "survival"] }
+        }
+      ]
+    },
+    {
+      "id": "elf-trance",
+      "name": "Trance",
+      "description": "You don't need to sleep, and magic can't put you to sleep. You can finish a Long Rest in 4 hours of light meditation."
+    },
+    {
+      "id": "elf-lineage",
+      "name": "Elven Lineage",
+      "description": "Choose a lineage: Drow (Darkvision 120 ft, Dancing Lights), High Elf (Prestidigitation, swap cantrip on Long Rest), or Wood Elf (+5 ft Speed, Druidcraft).",
+      "choices": [
+        {
+          "id": "elf-lineage",
+          "prompt": "Choose your Elven Lineage",
+          "choose": 1,
+          "options": {
+            "kind": "named",
+            "from": [
+              { "id": "drow", "name": "Drow" },
+              { "id": "high-elf", "name": "High Elf" },
+              {
+                "id": "wood-elf",
+                "name": "Wood Elf",
+                "contributions": [
+                  { "target": { "kind": "speed", "of": "walk" }, "op": "add", "value": { "expr": "literal", "value": 5 }, "note": "Wood Elf" }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
