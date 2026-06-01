@@ -147,6 +147,55 @@ class AppState {
     return this.#edit((s) => (s.abilities = { ...scores }));
   }
 
+  // ---- gear: weapons ----
+
+  addWeapon(w?: Partial<any>) {
+    return this.#edit((s) => {
+      s.weapons.push({
+        name: w?.name ?? 'New Weapon',
+        kind: w?.kind ?? 'melee',
+        damage: w?.damage ?? { count: 1, sides: 6 },
+        damage_type: w?.damage_type ?? 'slashing',
+        finesse: w?.finesse ?? false,
+        two_handed: w?.two_handed ?? false,
+        magic_bonus: w?.magic_bonus ?? 0,
+        proficient: w?.proficient ?? true,
+        mastery: w?.mastery ?? null
+      });
+    });
+  }
+  updateWeapon(index: number, patch: Partial<any>) {
+    return this.#edit((s) => {
+      const w = s.weapons[index];
+      if (w) Object.assign(w, patch);
+    });
+  }
+  removeWeapon(index: number) {
+    return this.#edit((s) => s.weapons.splice(index, 1));
+  }
+
+  // ---- gear: armor & shield ----
+
+  /** Set worn armor (null = unarmored). */
+  setArmor(armor: any | null) {
+    return this.#edit((s) => {
+      s.equipment.armor = armor;
+    });
+  }
+  toggleShield() {
+    return this.#edit((s) => {
+      s.equipment.shield = !s.equipment.shield;
+    });
+  }
+
+  // ---- notes ----
+
+  setNotes(text: string) {
+    return this.#edit((s) => {
+      s.notes = text;
+    });
+  }
+
   // ---- class mutations ----
 
   addClass(classId: string) {
@@ -430,7 +479,8 @@ function blankSheet(name: string): Sheet {
     weapons: [],
     concentration: null,
     death_saves: { successes: 0, failures: 0 },
-    inspiration: false
+    inspiration: false,
+    notes: ''
   };
 }
 

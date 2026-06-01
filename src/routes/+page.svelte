@@ -15,6 +15,9 @@
   import Conditions from '$lib/components/panels/Conditions.svelte';
   import BuildPanel from '$lib/components/build/BuildPanel.svelte';
   import OpenMenu from '$lib/components/build/OpenMenu.svelte';
+  import GearPanel from '$lib/components/sections/GearPanel.svelte';
+  import SpellsView from '$lib/components/sections/SpellsView.svelte';
+  import NotesView from '$lib/components/sections/NotesView.svelte';
   import { app, inTauri } from '$lib/state.svelte';
   import { SAMPLE_SHEET } from '$lib/sample';
   import { onMount } from 'svelte';
@@ -71,9 +74,15 @@
       {#if app.sheet && app.section === 'build'}
         <!-- Build mode: identity, abilities, classes, choice resolver -->
         <BuildPanel />
+      {:else if app.sheet && app.section === 'gear'}
+        <GearPanel />
+      {:else if app.sheet && app.section === 'spells'}
+        <SpellsView />
+      {:else if app.sheet && app.section === 'notes'}
+        <NotesView />
       {:else if app.computed}
-        <!-- Dense cockpit. Full-width header strips, then a multi-column masonry
-             so variable-height panels pack with no holes and reflow responsively. -->
+        <!-- Sheet mode: dense cockpit. Full-width header strips, then a multi-column
+             masonry so variable-height panels pack with no holes and reflow. -->
         <div class="flex flex-col gap-2">
           <Abilities />
           <RestBar />
