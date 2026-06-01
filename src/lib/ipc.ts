@@ -29,6 +29,11 @@ export function explain(sheet: CharacterSheet, stat: StatId): Promise<StatBreakd
   return invoke('explain', { sheet, stat });
 }
 
+/** Apply a short or long rest; returns the updated sheet. */
+export function rest(sheet: CharacterSheet, kind: 'short' | 'long'): Promise<CharacterSheet> {
+  return invoke('rest', { sheet, kind });
+}
+
 /** A blank character. */
 export function newSheet(name: string): Promise<CharacterSheet> {
   return invoke('new_sheet', { name });

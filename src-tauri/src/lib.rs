@@ -5,8 +5,8 @@
 mod content_embed;
 
 use rpgman_engine::{
-    compute as engine_compute, explain as engine_explain, Catalog, CharacterSheet,
-    ComputedCharacter, ContentDb, StatBreakdown, StatId,
+    compute as engine_compute, explain as engine_explain, rest as engine_rest, Catalog,
+    CharacterSheet, ComputedCharacter, ContentDb, RestKind, StatBreakdown, StatId,
 };
 use std::path::PathBuf;
 use std::sync::OnceLock;
@@ -45,6 +45,13 @@ fn explain(sheet: CharacterSheet, stat: StatId) -> StatBreakdown {
 #[tauri::command]
 fn new_sheet(name: String) -> CharacterSheet {
     CharacterSheet::new(name)
+}
+
+/// Apply a short or long rest, returning the updated sheet.
+#[tauri::command]
+fn rest(sheet: CharacterSheet, kind: String) -> Result<CharacterSheet, String> {
+    let kind = RestKind::parse(&kind).ok_or_else(|| format!("unknown rest kind: {kind}"))?;
+    Ok(engine_rest(&sheet, content(), kind))
 }
 
 /// Directory holding saved characters, created on first use.
@@ -126,6 +133,7 @@ pub fn run() {
             catalog,
             compute,
             explain,
+            rest,
             new_sheet,
             list_characters,
             load_character,
