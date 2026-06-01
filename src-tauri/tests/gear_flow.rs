@@ -76,3 +76,35 @@ fn notes_round_trip_through_serialization() {
     let back: CharacterSheet = serde_json::from_str(&json).unwrap();
     assert_eq!(back.notes, "Owes the guild 50gp. Afraid of fire.");
 }
+
+#[test]
+fn weapon_attack_breakdown_shows_proficiency_and_ability() {
+    use rpgman_engine::{Dice, WeaponInstance, WeaponKind};
+    let db = content();
+    let mut s = fighter(); // STR 16 (+3), fighter 5 (prof +3)
+    s.weapons.push(WeaponInstance {
+        name: "Longsword".into(),
+        kind: WeaponKind::Melee,
+        damage: Dice::new(1, 8),
+        damage_type: "slashing".into(),
+        finesse: false,
+        two_handed: false,
+        magic_bonus: 2,
+        proficient: true,
+        mastery: None,
+    });
+    let cc = compute(&s, &db);
+    let w = cc.weapons.iter().find(|w| w.name == "Longsword").unwrap();
+    // Attack = STR 3 + prof 3 + magic 2 = 8.
+    assert_eq!(w.attack_bonus, 8);
+    let ab = &w.attack_breakdown;
+    assert_eq!(ab.total, 8);
+    assert!(ab.lines.iter().any(|l| l.source == "STR" && l.value == 3), "STR line present");
+    assert!(ab.lines.iter().any(|l| l.source == "Proficiency" && l.value == 3), "Proficiency line present");
+    assert!(ab.lines.iter().any(|l| l.source == "Magic weapon" && l.value == 2), "magic line present");
+    // Damage = STR 3 + magic 2 = 5 (NO proficiency).
+    let dm = &w.damage_breakdown;
+    assert_eq!(dm.total, 5);
+    assert!(dm.lines.iter().any(|l| l.source == "STR" && l.value == 3));
+    assert!(!dm.lines.iter().any(|l| l.source == "Proficiency"), "proficiency must NOT add to damage");
+}

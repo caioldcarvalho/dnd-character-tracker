@@ -5,7 +5,8 @@
 
 use crate::build::{build, PendingChoice, ResolvedFeature};
 use crate::content::ContentDb;
-use crate::eval::{D20Test, EvalCtx, StatBreakdown};
+use crate::contribution::ContribOp;
+use crate::eval::{BreakdownLine, D20Test, EvalCtx, StatBreakdown};
 use crate::error::EvalError;
 use crate::ids::{Ability, MovementKind, ResourceId, Skill, SlotLevel, StatId, WeaponKind};
 use crate::resource::{HitDiePool, Recharge, ResourceKind};
@@ -94,6 +95,10 @@ pub struct WeaponView {
     pub damage_bonus: i32,
     pub damage_type: String,
     pub mastery: Option<String>,
+    /// Full provenance of the attack bonus (proficiency + ability + magic + feats).
+    pub attack_breakdown: StatBreakdown,
+    /// Full provenance of the damage bonus.
+    pub damage_breakdown: StatBreakdown,
 }
 
 #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
@@ -132,6 +137,19 @@ pub struct ComputedCharacter {
     pub pending_choices: Vec<PendingChoice>,
     pub carrying_capacity: i32,
     pub errors: Vec<EvalError>,
+}
+
+/// A non-graph breakdown line for values computed imperatively (weapon ability
+/// mod, proficiency, magic bonus) so they show alongside the contribution lines.
+fn manual_line(source: &str, value: i32) -> BreakdownLine {
+    BreakdownLine {
+        source: source.to_string(),
+        op: ContribOp::Add,
+        band: "add",
+        value,
+        note: None,
+        applied: true,
+    }
 }
 
 pub fn compute(sheet: &CharacterSheet, content: &ContentDb) -> ComputedCharacter {
@@ -242,22 +260,70 @@ pub fn compute(sheet: &CharacterSheet, content: &ContentDb) -> ComputedCharacter
         .weapons
         .iter()
         .map(|w| {
-            let abil = match w.kind {
-                WeaponKind::Melee if w.finesse => str_mod.max(dex_mod),
-                WeaponKind::Melee => str_mod,
-                WeaponKind::Ranged if w.finesse => str_mod.max(dex_mod),
-                WeaponKind::Ranged => dex_mod,
+            // Which ability governs this weapon, and its label.
+            let (abil, abil_name) = match w.kind {
+                WeaponKind::Melee if w.finesse => {
+                    if dex_mod > str_mod {
+                        (dex_mod, "DEX (finesse)")
+                    } else {
+                        (str_mod, "STR (finesse)")
+                    }
+                }
+                WeaponKind::Melee => (str_mod, "STR"),
+                WeaponKind::Ranged if w.finesse => {
+                    if dex_mod > str_mod {
+                        (dex_mod, "DEX (finesse)")
+                    } else {
+                        (str_mod, "STR (finesse)")
+                    }
+                }
+                WeaponKind::Ranged => (dex_mod, "DEX"),
             };
             let prof_part = if w.proficient { prof } else { 0 };
+            let feat_atk = ctx.explain(&StatId::WeaponAttackBonus(w.kind));
+            let feat_dmg = ctx.explain(&StatId::WeaponDamageBonus(w.kind));
+
+            // Attack breakdown: ability + (proficiency) + (magic) + feat lines.
+            let mut atk_lines = vec![manual_line(abil_name, abil)];
+            if w.proficient {
+                atk_lines.push(manual_line("Proficiency", prof));
+            }
+            if w.magic_bonus != 0 {
+                atk_lines.push(manual_line("Magic weapon", w.magic_bonus));
+            }
+            atk_lines.extend(feat_atk.lines.iter().cloned());
+            let attack_bonus = prof_part + abil + w.magic_bonus + feat_atk.total;
+            let attack_breakdown = StatBreakdown {
+                stat: StatId::WeaponAttackBonus(w.kind),
+                label: format!("{} — Attack", w.name),
+                total: attack_bonus,
+                lines: atk_lines,
+            };
+
+            // Damage breakdown: ability + (magic) + feat lines (no proficiency).
+            let mut dmg_lines = vec![manual_line(abil_name, abil)];
+            if w.magic_bonus != 0 {
+                dmg_lines.push(manual_line("Magic weapon", w.magic_bonus));
+            }
+            dmg_lines.extend(feat_dmg.lines.iter().cloned());
+            let damage_bonus = abil + w.magic_bonus + feat_dmg.total;
+            let damage_breakdown = StatBreakdown {
+                stat: StatId::WeaponDamageBonus(w.kind),
+                label: format!("{} — Damage", w.name),
+                total: damage_bonus,
+                lines: dmg_lines,
+            };
+
             WeaponView {
                 name: w.name.clone(),
                 kind: w.kind,
-                attack_bonus: prof_part + abil + w.magic_bonus
-                    + ctx.eval(&StatId::WeaponAttackBonus(w.kind)),
+                attack_bonus,
                 damage: w.damage,
-                damage_bonus: abil + w.magic_bonus + ctx.eval(&StatId::WeaponDamageBonus(w.kind)),
+                damage_bonus,
                 damage_type: w.damage_type.clone(),
                 mastery: w.mastery.clone(),
+                attack_breakdown,
+                damage_breakdown,
             }
         })
         .collect();
