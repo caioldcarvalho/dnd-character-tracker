@@ -29,8 +29,9 @@ node_modules
 .env.*
 !.env.example
 
-# cogitlog — commit the reasoning history (sessions/*.jsonl, index.jsonl), but
-# ignore the ephemeral machine-local session pointer and any binary DB.
-.cogitlog/current
-.cogitlog/*.sqlite
-.cogitlog/*.sqlite-*
+# cogitlog — internal dev-reasoning notes, kept local (not in the public repo).
+.cogitlog/
+COGITLOG
+
+# Claude Code local dir
+.claude/

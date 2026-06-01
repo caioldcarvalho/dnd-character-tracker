@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev patchelf
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+
+      - name: Engine tests
+        run: cargo test -p rpgman-engine
+
+      - name: App tests
+        run: cargo test -p rpgman
+
+      - name: TypeScript binding drift check
+        run: |
+          cargo test -p rpgman-engine --features ts
+          git diff --exit-code src/lib/bindings || (echo "::error::ts-rs bindings are stale — run 'cargo test -p rpgman-engine --features ts' and commit" && exit 1)
+
+      - name: Frontend typecheck
+        run: |
+          npm ci
+          npm run check
