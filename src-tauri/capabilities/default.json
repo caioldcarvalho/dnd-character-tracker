@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities: core, plus scoped file dialog and fs for character files.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "dialog:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$APPDATA/characters/**" }, { "path": "$APPLOCALDATA/characters/**" }]
+    }
+  ]
+}

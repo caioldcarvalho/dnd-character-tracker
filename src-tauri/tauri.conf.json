@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "rpgman",
+  "version": "0.1.0",
+  "identifier": "com.caio.rpgman",
+  "build": {
+    "frontendDist": "../build",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "rpgman",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 900,
+        "minHeight": 600,
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": ["icons/icon.png"]
+  }
+}

@@ -1,6 +1,5 @@
 [workspace]
-# src-tauri is added once the shell is scaffolded.
-members = ["crates/engine"]
+members = ["crates/engine", "src-tauri"]
 resolver = "2"
 
 [workspace.package]
