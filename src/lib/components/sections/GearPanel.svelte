@@ -223,11 +223,23 @@
               <span class="uppercase tracking-wider text-[var(--color-muted)] text-[9px]">live</span>
               <span class="flex items-center gap-1">
                 <span class="text-[var(--color-muted)] text-[9px]">atk</span>
-                <span class="num font-semibold text-[var(--color-good)]">{c ? signed(c.attack_bonus) : '—'}</span>
+                <button
+                  type="button"
+                  onclick={() => app.inspectWeapon(i, 'attack')}
+                  disabled={!c}
+                  class="num font-semibold text-[var(--color-good)] hover:underline cursor-pointer disabled:cursor-default"
+                  title="What makes up this attack bonus?">{c ? signed(c.attack_bonus) : '—'} ⓘ</button
+                >
               </span>
               <span class="flex items-center gap-1">
                 <span class="text-[var(--color-muted)] text-[9px]">dmg</span>
-                <span class="num text-[var(--color-ink)]">{c ? compDmg(c) : '—'}</span>
+                <button
+                  type="button"
+                  onclick={() => app.inspectWeapon(i, 'damage')}
+                  disabled={!c}
+                  class="num text-[var(--color-ink)] hover:text-[var(--color-accent)] cursor-pointer disabled:cursor-default"
+                  title="What makes up this damage?">{c ? compDmg(c) : '—'}</button
+                >
                 {#if c?.damage_type}<span class="text-[var(--color-muted)] text-[9px]">{c.damage_type}</span>{/if}
               </span>
               {#if c?.mastery}

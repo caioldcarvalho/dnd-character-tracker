@@ -24,12 +24,24 @@
         </tr>
       </thead>
       <tbody>
-        {#each weapons as w}
+        {#each weapons as w, i}
           <tr class="border-t border-[var(--color-border)]/50">
             <td class="py-1 truncate">{w.name}</td>
-            <td class="py-1 text-right num font-semibold">{signed(w.attack_bonus)}</td>
+            <td class="py-1 text-right">
+              <button
+                type="button"
+                onclick={() => app.inspectWeapon(i, 'attack')}
+                class="num font-semibold hover:text-[var(--color-accent)] cursor-pointer"
+                title="What makes up this attack bonus?">{signed(w.attack_bonus)} ⓘ</button
+              >
+            </td>
             <td class="py-1 text-right num">
-              {dmg(w)}<span class="text-[var(--color-muted)] text-[9px]"> {w.damage_type}</span>
+              <button
+                type="button"
+                onclick={() => app.inspectWeapon(i, 'damage')}
+                class="hover:text-[var(--color-accent)] cursor-pointer"
+                title="What makes up this damage?">{dmg(w)}</button
+              ><span class="text-[var(--color-muted)] text-[9px]"> {w.damage_type}</span>
             </td>
             <td class="py-1 text-right">
               {#if w.mastery}<span class="text-[9px] text-[var(--color-accent)] capitalize">{w.mastery}</span>{/if}

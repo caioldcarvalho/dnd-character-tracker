@@ -28,7 +28,11 @@ class AppState {
   /** Section shown in the left rail. */
   section = $state<'sheet' | 'build' | 'spells' | 'gear' | 'notes'>('sheet');
   /** The stat whose breakdown is pinned in the inspector. */
-  inspecting = $state<{ stat: any; breakdown: Breakdown } | null>(null);
+  inspecting = $state<{
+    stat: any;
+    breakdown: Breakdown;
+    weaponRef: { index: number; mode: 'attack' | 'damage' } | null;
+  } | null>(null);
   /** Whether the last compute hit an error. */
   error = $state<string | null>(null);
   busy = $state(false);
@@ -107,9 +111,23 @@ class AppState {
       if (this.section === 'build' && this.sheet) {
         this.sheet.hp.current = this.computed?.max_hp?.total ?? 0;
       }
-      if (this.inspecting) {
+      // Refresh an open inspector against the new computation.
+      if (this.inspecting?.weaponRef) {
+        const { index, mode } = this.inspecting.weaponRef;
+        const w = this.computed?.weapons?.[index];
+        if (w) {
+          this.inspecting = {
+            stat: null,
+            weaponRef: this.inspecting.weaponRef,
+            breakdown: mode === 'attack' ? w.attack_breakdown : w.damage_breakdown
+          };
+        } else {
+          this.inspecting = null; // weapon removed
+        }
+      } else if (this.inspecting?.stat) {
         this.inspecting = {
           stat: this.inspecting.stat,
+          weaponRef: null,
           breakdown: await ipc.explain(this.sheet, this.inspecting.stat)
         };
       }
@@ -443,14 +461,27 @@ class AppState {
 
   // ---- inspector ----
 
+  /** Inspect a graph StatId (fetched via explain, refreshed on recompute). */
   async inspect(stat: any) {
     if (!this.sheet) return;
     try {
       const breakdown = await ipc.explain(this.sheet, stat);
-      this.inspecting = { stat, breakdown };
+      this.inspecting = { stat, breakdown, weaponRef: null };
     } catch (e) {
       this.error = String(e);
     }
+  }
+
+  /**
+   * Inspect a per-weapon attack/damage breakdown. These are computed in the
+   * view (not the DAG), so we pull them from `computed.weapons` and re-pull on
+   * recompute via the stored ref.
+   */
+  inspectWeapon(index: number, mode: 'attack' | 'damage') {
+    const w = this.computed?.weapons?.[index];
+    if (!w) return;
+    const breakdown = mode === 'attack' ? w.attack_breakdown : w.damage_breakdown;
+    this.inspecting = { stat: null, breakdown, weaponRef: { index, mode } };
   }
 
   closeInspector() {
