@@ -45,6 +45,21 @@ fn catalog_lists_all_content() {
 }
 
 #[test]
+fn catalog_feats_carry_the_categories_choices_filter_on() {
+    // The build UI filters feats by category for `feat` choices (fighting-style
+    // from Fighter/Paladin/Ranger, origin from Human/backgrounds). If feats lose
+    // their category tag, those pickers silently show nothing — guard against it.
+    let cat = Catalog::from_content(&content());
+    let has = |c: &str| cat.feats.iter().any(|f| f.category.as_deref() == Some(c));
+    assert!(has("fighting-style"), "no fighting-style feats — the FS picker would be empty");
+    assert!(has("origin"), "no origin feats — the origin-feat picker would be empty");
+    for id in ["defense", "dueling", "archery"] {
+        let f = cat.feats.iter().find(|f| f.id == id).expect("fighting style present");
+        assert_eq!(f.category.as_deref(), Some("fighting-style"), "{id} miscategorized");
+    }
+}
+
+#[test]
 fn compute_produces_a_sane_sheet() {
     let cc = compute(&sample(), &content());
     assert!(cc.errors.is_empty(), "compute errors: {:?}", cc.errors);

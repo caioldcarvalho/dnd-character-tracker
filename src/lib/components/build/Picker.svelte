@@ -99,8 +99,12 @@
   });
 </script>
 
-<div class="flex flex-col gap-0.5" bind:this={root}>
-  <span class="text-[9px] uppercase tracking-wide text-[var(--color-muted)]">{label}</span>
+<!-- When open, lift into a high stacking context so the absolute dropdown paints
+     above sibling cards in the grid. Skip the label row when label is empty. -->
+<div class="flex flex-col gap-0.5 {open ? 'relative z-50' : ''}" bind:this={root}>
+  {#if label}
+    <span class="text-[9px] uppercase tracking-wide text-[var(--color-muted)]">{label}</span>
+  {/if}
 
   <div class="relative">
     <button
