@@ -4,6 +4,7 @@
 
 use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Ability {
@@ -48,6 +49,7 @@ impl Ability {
     }
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Skill {
@@ -131,6 +133,7 @@ impl Skill {
     }
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum MovementKind {
@@ -153,6 +156,7 @@ impl MovementKind {
     }
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum WeaponKind {
@@ -209,22 +213,27 @@ macro_rules! string_newtype {
 
 string_newtype!(
     /// A class id, e.g. `"fighter"`. Content-driven.
+    #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
     ClassId
 );
 string_newtype!(
     /// A resource pool id, e.g. `"superiority-dice"`. Content-driven.
+    #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
     ResourceId
 );
 string_newtype!(
     /// A spellcasting source id (usually a class id), e.g. `"wizard"`.
+    #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
     CastingSource
 );
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct SlotLevel(pub u8);
 
 /// Every computable value in the character. The evaluator must handle each
 /// variant, so adding a stat is a compiler-guided checklist.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "of", rename_all = "kebab-case")]
 pub enum StatId {

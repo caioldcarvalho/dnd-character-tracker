@@ -8,6 +8,7 @@ use crate::value::ValueExpr;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ResourceKind {
@@ -17,6 +18,7 @@ pub enum ResourceKind {
     Dice,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Recharge {
@@ -26,6 +28,7 @@ pub enum Recharge {
     Special,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ResourceDef {
     pub id: ResourceId,
@@ -57,6 +60,7 @@ impl ResourceDef {
 }
 
 /// A pool of hit dice of one size (multiclass characters have several).
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HitDiePool {
     pub sides: u8,

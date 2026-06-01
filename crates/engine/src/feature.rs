@@ -8,6 +8,7 @@ use crate::ids::{Ability, Skill};
 use crate::resource::ResourceDef;
 use serde::{Deserialize, Serialize};
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Activation {
@@ -29,6 +30,7 @@ impl Default for Activation {
     }
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "kebab-case")]
 pub enum ProficiencyGrant {
@@ -54,6 +56,7 @@ pub enum ProficiencyGrant {
     },
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SpellGrant {
     pub spell: String,
@@ -62,6 +65,7 @@ pub struct SpellGrant {
 }
 
 /// A decision the player must make (skill picks, fighting style, ASI, subclass…).
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChoicePoint {
     /// Globally unique key; a [`RecordedChoice`](crate::sheet::RecordedChoice)
@@ -83,6 +87,7 @@ fn three() -> u8 {
     3
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "kebab-case")]
 pub enum ChoiceOptions {
@@ -125,6 +130,7 @@ pub enum ChoiceOptions {
     },
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct NamedOption {
     pub id: String,
@@ -136,6 +142,7 @@ pub struct NamedOption {
 }
 
 /// The universal effect bundle.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Feature {
     pub id: String,

@@ -12,6 +12,7 @@
 //! full breakdown for every stat.
 
 pub mod build;
+pub mod catalog;
 pub mod computed;
 pub mod content;
 pub mod contribution;
@@ -24,6 +25,9 @@ pub mod sheet;
 pub mod value;
 
 pub use build::{build, Built, EnvFlags, PendingChoice, ResolvedFeature, SpellSource};
+pub use catalog::{
+    BackgroundSummary, Catalog, ClassSummary, FeatSummary, SpeciesSummary, SubclassSummary,
+};
 pub use computed::{
     compute, explain, AbilityView, ComputedCharacter, EffectView, PassiveView, ResourceView,
     SaveView, SkillView, SpeedView, SpellSlotView, SpellcastingView, WeaponView,

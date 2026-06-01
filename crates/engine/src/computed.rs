@@ -13,6 +13,7 @@ use crate::sheet::CharacterSheet;
 use crate::value::Dice;
 use serde::Serialize;
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct AbilityView {
     pub ability: Ability,
@@ -20,6 +21,7 @@ pub struct AbilityView {
     pub modifier: i32,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct SaveView {
     pub ability: Ability,
@@ -27,6 +29,7 @@ pub struct SaveView {
     pub test: D20Test,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct SkillView {
     pub skill: Skill,
@@ -37,18 +40,21 @@ pub struct SkillView {
     pub test: D20Test,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct PassiveView {
     pub skill: Skill,
     pub value: i32,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct SpeedView {
     pub kind: MovementKind,
     pub value: i32,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct ResourceView {
     pub id: ResourceId,
@@ -60,12 +66,14 @@ pub struct ResourceView {
     pub recharge: Recharge,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct SpellSlotView {
     pub level: u8,
     pub max: i32,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct SpellcastingView {
     pub source: String,
@@ -75,6 +83,7 @@ pub struct SpellcastingView {
     pub prepared: Option<i32>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct WeaponView {
     pub name: String,
@@ -86,6 +95,7 @@ pub struct WeaponView {
     pub mastery: Option<String>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct EffectView {
     pub id: String,
@@ -93,6 +103,7 @@ pub struct EffectView {
     pub active: bool,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct ComputedCharacter {
     pub name: String,

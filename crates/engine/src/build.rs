@@ -30,6 +30,7 @@ pub struct EnvFlags {
 }
 
 /// An unresolved decision the player still has to make.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct PendingChoice {
     pub key: String,
@@ -40,6 +41,7 @@ pub struct PendingChoice {
 }
 
 /// A feature the character has, for display.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Serialize)]
 pub struct ResolvedFeature {
     pub name: String,

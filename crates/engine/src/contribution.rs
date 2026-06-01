@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 /// How a contribution combines into its target stat. Applied in band order:
 /// Base → Add → Multiply → Floor → Cap → Override.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ContribOp {
@@ -34,6 +35,7 @@ impl Default for ContribOp {
 
 /// Non-numeric effects on a d20 test. Per 2024, one advantage cancels any number
 /// of disadvantages and vice versa — they do not stack.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum D20Effect {
@@ -44,6 +46,7 @@ pub enum D20Effect {
 }
 
 /// Gate for whether a contribution is currently active.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "if", rename_all = "kebab-case")]
 pub enum Condition {
@@ -57,6 +60,7 @@ pub enum Condition {
 }
 
 /// Where a contribution came from — its provenance, shown in the breakdown.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "from", rename_all = "kebab-case")]
 pub enum SourceRef {
@@ -96,6 +100,7 @@ impl SourceRef {
 }
 
 /// One traceable input to a stat.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Contribution {
     pub target: StatId,

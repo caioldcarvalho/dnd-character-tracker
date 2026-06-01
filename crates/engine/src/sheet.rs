@@ -8,6 +8,7 @@ use crate::value::Dice;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct Meta {
     pub name: String,
@@ -17,6 +18,7 @@ pub struct Meta {
     pub id: String,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ClassEntry {
     pub class: ClassId,
@@ -27,6 +29,7 @@ pub struct ClassEntry {
 
 /// A resolved [`ChoicePoint`](crate::feature::ChoicePoint): `key` matches the
 /// choice's id, `picks` are the selected option ids / values.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RecordedChoice {
     pub key: String,
@@ -34,6 +37,7 @@ pub struct RecordedChoice {
     pub picks: Vec<String>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ArmorKind {
@@ -42,6 +46,7 @@ pub enum ArmorKind {
     Heavy,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArmorItem {
     pub name: String,
@@ -53,6 +58,7 @@ pub struct ArmorItem {
     pub dex_cap: Option<i32>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct Equipment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -61,6 +67,7 @@ pub struct Equipment {
     pub shield: bool,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct HpState {
     #[serde(default)]
@@ -72,6 +79,7 @@ pub struct HpState {
     pub rolled: Vec<u8>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WeaponInstance {
     pub name: String,
@@ -99,6 +107,7 @@ fn yes() -> bool {
     true
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct DeathSaves {
     #[serde(default)]
@@ -107,6 +116,7 @@ pub struct DeathSaves {
     pub failures: u8,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CharacterSheet {
     #[serde(default)]

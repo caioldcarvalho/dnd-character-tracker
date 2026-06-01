@@ -18,6 +18,7 @@ enum Color {
 }
 
 /// One line of a stat's breakdown.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct BreakdownLine {
     pub source: String,
@@ -31,6 +32,7 @@ pub struct BreakdownLine {
 }
 
 /// The full provenance of a single stat.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct StatBreakdown {
     pub stat: StatId,
@@ -39,6 +41,7 @@ pub struct StatBreakdown {
     pub lines: Vec<BreakdownLine>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct SourceNote {
     pub source: String,
@@ -46,6 +49,7 @@ pub struct SourceNote {
     pub note: Option<String>,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AdvState {
@@ -54,6 +58,7 @@ pub enum AdvState {
     Flat,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum AutoOutcome {
@@ -62,6 +67,7 @@ pub enum AutoOutcome {
     None,
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct D20Channel {
     pub advantage: Vec<SourceNote>,
@@ -72,6 +78,7 @@ pub struct D20Channel {
 
 /// The resolved result of a d20 test: the numeric bonus + its breakdown, the
 /// advantage state, and any auto outcome.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct D20Test {
     pub total: i32,

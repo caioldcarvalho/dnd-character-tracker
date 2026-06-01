@@ -6,6 +6,7 @@ use crate::ids::{Ability, StatId};
 use serde::{Deserialize, Serialize};
 
 /// A dice expression like `2d6`.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dice {
     pub count: u8,
@@ -25,6 +26,7 @@ impl Dice {
     }
 }
 
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "expr", rename_all = "kebab-case")]
 pub enum ValueExpr {
