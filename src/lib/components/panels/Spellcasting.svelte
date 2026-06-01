@@ -34,7 +34,16 @@
               <span class="text-[9px] text-[var(--color-muted)]">L{s.level}</span>
               <span class="flex gap-0.5 mt-0.5">
                 {#each Array(s.max) as _, i}
-                  <span class="w-2 h-2 rounded-full bg-[var(--color-accent)]"></span>
+                  <button
+                    type="button"
+                    onclick={() => (i < s.current ? app.expendSlot(s.level) : app.restoreSlot(s.level))}
+                    title={i < s.current ? `Expend L${s.level} slot` : `Restore L${s.level} slot`}
+                    class="w-2.5 h-2.5 rounded-full transition-colors hover:ring-1 hover:ring-[var(--color-accent)] {i <
+                    s.current
+                      ? 'bg-[var(--color-accent)]'
+                      : 'border border-[var(--color-border)] bg-[var(--color-panel)]'}"
+                    aria-label={i < s.current ? `Expend level ${s.level} slot` : `Restore level ${s.level} slot`}
+                  ></button>
                 {/each}
               </span>
             </div>

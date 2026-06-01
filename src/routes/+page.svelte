@@ -6,6 +6,9 @@
   import Skills from '$lib/components/panels/Skills.svelte';
   import Combat from '$lib/components/panels/Combat.svelte';
   import Weapons from '$lib/components/panels/Weapons.svelte';
+  import HPPanel from '$lib/components/panels/HPPanel.svelte';
+  import RestBar from '$lib/components/panels/RestBar.svelte';
+  import DeathSaves from '$lib/components/panels/DeathSaves.svelte';
   import Resources from '$lib/components/panels/Resources.svelte';
   import Spellcasting from '$lib/components/panels/Spellcasting.svelte';
   import Features from '$lib/components/panels/Features.svelte';
@@ -56,13 +59,19 @@
         <!-- Build mode: identity, abilities, classes, choice resolver -->
         <BuildPanel />
       {:else if app.computed}
-        <!-- Dense cockpit grid (Sheet mode) -->
+        <!-- Dense cockpit grid (Sheet / play mode) -->
         <div class="grid grid-cols-12 gap-2 auto-rows-min">
           <div class="col-span-12"><Abilities /></div>
+          <!-- Play controls row: HP + rests prominent -->
+          <div class="col-span-5"><HPPanel /></div>
+          <div class="col-span-7"><RestBar /></div>
           <div class="col-span-5"><Combat /></div>
           <div class="col-span-7"><Conditions /></div>
           <div class="col-span-4 row-span-3"><Skills /></div>
           <div class="col-span-8"><Weapons /></div>
+          {#if app.computed.current_hp === 0}
+            <div class="col-span-8"><DeathSaves /></div>
+          {/if}
           <div class="col-span-8"><Resources /></div>
           <div class="col-span-8"><Spellcasting /></div>
           <div class="col-span-8"><Features /></div>

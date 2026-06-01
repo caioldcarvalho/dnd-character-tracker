@@ -83,6 +83,12 @@ class AppState {
     this.error = null;
     try {
       this.computed = await ipc.compute(this.sheet);
+      // While building, current HP tracks max (you're not playing yet, so the
+      // sheet should read full). Max HP never depends on current HP, so this
+      // assignment can't cause a recompute loop. Play mode preserves current HP.
+      if (this.section === 'build' && this.sheet) {
+        this.sheet.hp.current = this.computed?.max_hp?.total ?? 0;
+      }
       if (this.inspecting) {
         this.inspecting = {
           stat: this.inspecting.stat,
@@ -183,6 +189,166 @@ class AppState {
       return entry?.subclass ? [entry.subclass] : [];
     }
     return this.sheet.choices.find((c: any) => c.key === choice.key)?.picks ?? [];
+  }
+
+  // ---- play: HP ----
+
+  get maxHp(): number {
+    return this.computed?.max_hp?.total ?? 0;
+  }
+
+  /** Apply damage: depletes temp HP first, then current HP (floored at 0). */
+  applyDamage(amount: number) {
+    const n = Math.max(0, Math.floor(amount));
+    return this.#edit((s) => {
+      let dmg = n;
+      const absorbed = Math.min(s.hp.temp, dmg);
+      s.hp.temp -= absorbed;
+      dmg -= absorbed;
+      s.hp.current = Math.max(0, s.hp.current - dmg);
+    });
+  }
+
+  /** Heal: raises current HP, clamped to max. */
+  heal(amount: number) {
+    const n = Math.max(0, Math.floor(amount));
+    return this.#edit((s) => {
+      s.hp.current = Math.min(this.maxHp, s.hp.current + n);
+    });
+  }
+
+  /** Set temp HP (2024: temp HP doesn't stack — the higher value wins). */
+  setTempHp(amount: number) {
+    const n = Math.max(0, Math.floor(amount));
+    return this.#edit((s) => {
+      s.hp.temp = Math.max(s.hp.temp, n);
+    });
+  }
+
+  /** Directly set current HP (manual override), clamped 0..max. */
+  setCurrentHp(value: number) {
+    return this.#edit((s) => {
+      s.hp.current = Math.max(0, Math.min(this.maxHp, Math.floor(value)));
+    });
+  }
+
+  // ---- play: resources ----
+
+  /** Spend `n` from a resource pool (clamped at 0). */
+  spendResource(id: string, max: number, n = 1) {
+    return this.#edit((s) => {
+      const cur = s.resources[id] ?? max;
+      s.resources[id] = Math.max(0, cur - n);
+    });
+  }
+  /** Restore `n` to a resource pool (clamped at max). */
+  restoreResource(id: string, max: number, n = 1) {
+    return this.#edit((s) => {
+      const cur = s.resources[id] ?? max;
+      const next = Math.min(max, cur + n);
+      if (next >= max) delete s.resources[id]; // full → drop to keep sheet minimal
+      else s.resources[id] = next;
+    });
+  }
+  /** Set a resource's current value directly (clamped 0..max). */
+  setResource(id: string, max: number, value: number) {
+    return this.#edit((s) => {
+      const v = Math.max(0, Math.min(max, Math.floor(value)));
+      if (v >= max) delete s.resources[id];
+      else s.resources[id] = v;
+    });
+  }
+
+  // ---- play: spell slots ----
+
+  expendSlot(level: number) {
+    return this.#edit((s) => {
+      s.slots_expended[level] = (s.slots_expended[level] ?? 0) + 1;
+    });
+  }
+  restoreSlot(level: number) {
+    return this.#edit((s) => {
+      const cur = s.slots_expended[level] ?? 0;
+      if (cur <= 1) delete s.slots_expended[level];
+      else s.slots_expended[level] = cur - 1;
+    });
+  }
+
+  // ---- play: hit dice ----
+
+  spendHitDie(sides: number, total: number) {
+    return this.#edit((s) => {
+      const spent = s.hit_dice_spent[sides] ?? 0;
+      if (spent < total) s.hit_dice_spent[sides] = spent + 1;
+    });
+  }
+
+  // ---- play: rests ----
+
+  async rest(kind: 'short' | 'long') {
+    if (!this.sheet) return;
+    if (inTauri()) {
+      // Authoritative recharge in Rust.
+      try {
+        const rested = await ipc.rest(this.sheet, kind);
+        this.sheet = rested;
+        this.dirty = true;
+        await this.recompute();
+        this.#scheduleAutosave();
+      } catch (e) {
+        this.error = String(e);
+      }
+    } else {
+      // Browser-preview fallback: clear the relevant runtime state locally.
+      await this.#edit((s) => {
+        s.resources = {};
+        if (kind === 'long') {
+          s.slots_expended = {};
+          s.hp.current = this.maxHp;
+          s.hp.temp = 0;
+          s.exhaustion = Math.max(0, (s.exhaustion ?? 0) - 1);
+          s.concentration = null;
+        }
+      });
+    }
+  }
+
+  // ---- play: conditions / effects / status ----
+
+  toggleCondition(name: string) {
+    return this.#edit((s) => {
+      const i = s.conditions.indexOf(name);
+      if (i >= 0) s.conditions.splice(i, 1);
+      else s.conditions.push(name);
+    });
+  }
+  setExhaustion(level: number) {
+    return this.#edit((s) => (s.exhaustion = Math.max(0, Math.min(6, Math.floor(level)))));
+  }
+  toggleEffect(id: string) {
+    return this.#edit((s) => {
+      const i = s.active_effects.indexOf(id);
+      if (i >= 0) s.active_effects.splice(i, 1);
+      else s.active_effects.push(id);
+    });
+  }
+  setConcentration(spell: string | null) {
+    return this.#edit((s) => (s.concentration = spell));
+  }
+  toggleInspiration() {
+    return this.#edit((s) => (s.inspiration = !s.inspiration));
+  }
+  /** Record a death save tick (kind: 'success' | 'failure'), or reset. */
+  deathSave(kind: 'success' | 'failure' | 'reset') {
+    return this.#edit((s) => {
+      if (kind === 'reset') {
+        s.death_saves = { successes: 0, failures: 0 };
+      } else if (kind === 'success') {
+        s.death_saves.successes = Math.min(3, (s.death_saves.successes ?? 0) + 1);
+      } else {
+        s.death_saves.failures = Math.min(3, (s.death_saves.failures ?? 0) + 1);
+      }
+    });
   }
 
   // ---- persistence ----
