@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+
+/* Dense data-cockpit theme: dark, compact, monospace-leaning numerics. */
+@theme {
+  --color-bg: #0b0e14;
+  --color-panel: #131722;
+  --color-panel-2: #1a1f2e;
+  --color-border: #232a3b;
+  --color-ink: #d7dce5;
+  --color-muted: #8b94a7;
+  --color-accent: #5b8cff;
+  --color-good: #4caf80;
+  --color-warn: #e0b34a;
+  --color-bad: #e0574a;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numbers everywhere stats are shown. */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
