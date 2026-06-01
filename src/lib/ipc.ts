@@ -42,6 +42,7 @@ export function loadCharacter(path: string): Promise<CharacterSheet> {
   return invoke('load_character', { path });
 }
 
-export function saveCharacter(path: string, sheet: CharacterSheet): Promise<void> {
+/** Persist a character. `path` null creates a new file; returns the saved path. */
+export function saveCharacter(path: string | null, sheet: CharacterSheet): Promise<string> {
   return invoke('save_character', { path, sheet });
 }

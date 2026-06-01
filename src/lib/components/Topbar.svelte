@@ -53,7 +53,7 @@
     </div>
   {/if}
 
-  <!-- Status indicator -->
+  <!-- Status + document actions -->
   <div class="ml-2 flex items-center gap-2">
     {#if app.busy}
       <span class="text-[10px] text-[var(--color-muted)]">computing…</span>
@@ -61,5 +61,23 @@
     {#if app.error}
       <span class="text-[10px] text-[var(--color-bad)]" title={app.error}>⚠ error</span>
     {/if}
+    <button
+      type="button"
+      onclick={() => app.newCharacter()}
+      class="text-[11px] px-2 py-1 rounded border border-[var(--color-border)] hover:bg-[var(--color-panel-2)] text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+      title="New character">+ New</button
+    >
+    <button
+      type="button"
+      onclick={() => app.save()}
+      disabled={!app.dirty || app.saving}
+      class="text-[11px] px-2 py-1 rounded border transition-colors
+        {app.dirty
+          ? 'border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)]/10'
+          : 'border-[var(--color-border)] text-[var(--color-muted)] opacity-60 cursor-default'}"
+      title={app.dirty ? 'Save character' : 'No unsaved changes'}
+    >
+      {app.saving ? 'saving…' : app.dirty ? '● Save' : 'Saved'}
+    </button>
   </div>
 </header>

@@ -10,6 +10,8 @@
   import Spellcasting from '$lib/components/panels/Spellcasting.svelte';
   import Features from '$lib/components/panels/Features.svelte';
   import Conditions from '$lib/components/panels/Conditions.svelte';
+  import BuildPanel from '$lib/components/build/BuildPanel.svelte';
+  import OpenMenu from '$lib/components/build/OpenMenu.svelte';
   import { app, inTauri } from '$lib/state.svelte';
   import { SAMPLE_SHEET } from '$lib/sample';
   import { onMount } from 'svelte';
@@ -17,11 +19,16 @@
   let loadError = $state<string | null>(null);
 
   onMount(async () => {
-    // M1: load the bundled sample so the cockpit renders immediately.
-    try {
-      await app.setSheet(structuredClone(SAMPLE_SHEET));
-    } catch (e) {
-      loadError = String(e);
+    // Preload the content catalog for build pickers.
+    app.ensureCatalog();
+    // In browser preview (no backend), load the bundled sample so the cockpit
+    // has something to show. In the app, the open/new menu drives loading.
+    if (!inTauri()) {
+      try {
+        await app.setSheet(structuredClone(SAMPLE_SHEET));
+      } catch (e) {
+        loadError = String(e);
+      }
     }
   });
 </script>
@@ -34,19 +41,10 @@
 
     <!-- Main grid -->
     <main class="flex-1 overflow-y-auto p-2">
-      {#if !app.computed}
-        <div class="h-full flex items-center justify-center">
-          <p class="text-[var(--color-muted)] text-sm">
-            {#if loadError}
-              <span class="text-[var(--color-bad)]">Failed to load: {loadError}</span>
-            {:else if !inTauri()}
-              Loading sample… (backend not detected — running in preview)
-            {:else}
-              Loading…
-            {/if}
-          </p>
-        </div>
-      {:else if app.computed.errors?.length}
+      {#if !app.sheet}
+        <!-- No character loaded → open/new menu -->
+        <OpenMenu />
+      {:else if app.computed?.errors?.length}
         <div
           class="mb-2 px-3 py-2 rounded border border-[var(--color-bad)] bg-[var(--color-bad)]/10 text-[var(--color-bad)] text-[11px]"
         >
@@ -54,8 +52,11 @@
         </div>
       {/if}
 
-      {#if app.computed}
-        <!-- Dense cockpit grid -->
+      {#if app.sheet && app.section === 'build'}
+        <!-- Build mode: identity, abilities, classes, choice resolver -->
+        <BuildPanel />
+      {:else if app.computed}
+        <!-- Dense cockpit grid (Sheet mode) -->
         <div class="grid grid-cols-12 gap-2 auto-rows-min">
           <div class="col-span-12"><Abilities /></div>
           <div class="col-span-5"><Combat /></div>
