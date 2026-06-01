@@ -76,6 +76,24 @@ class AppState {
     }
   }
 
+  /** Close the current character and return to the library/open menu. */
+  async closeCharacter(opts: { saveFirst?: boolean } = {}) {
+    if (opts.saveFirst && this.dirty && inTauri()) {
+      await this.save();
+    }
+    if (this.#saveTimer) {
+      clearTimeout(this.#saveTimer);
+      this.#saveTimer = null;
+    }
+    this.sheet = null;
+    this.computed = null;
+    this.path = null;
+    this.dirty = false;
+    this.inspecting = null;
+    this.error = null;
+    this.section = 'sheet';
+  }
+
   /** Re-run the engine over the current sheet. */
   async recompute() {
     if (!this.sheet) return;

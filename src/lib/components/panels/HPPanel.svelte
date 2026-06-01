@@ -45,14 +45,21 @@
     <p class="text-[11px] text-[var(--color-muted)] py-2 text-center">No character.</p>
   {:else}
     <div class="flex flex-col gap-2">
-      <!-- Big current / max -->
+      <!-- Big current / max. Max is clickable → opens the HP contribution tree. -->
       <div class="flex items-baseline gap-1.5">
         <span
           class="num font-semibold text-2xl leading-none"
           style="color: {current === 0 ? 'var(--color-bad)' : 'var(--color-ink)'};"
           >{current}</span
         >
-        <span class="num text-sm text-[var(--color-muted)] leading-none">/ {max}</span>
+        <button
+          type="button"
+          onclick={() => app.inspect({ kind: 'max-hit-points' })}
+          class="num text-sm text-[var(--color-muted)] leading-none hover:text-[var(--color-accent)] cursor-pointer"
+          title="What makes up max HP?"
+        >
+          / {max} ⓘ
+        </button>
         {#if temp > 0}
           <span class="num text-[11px] text-[var(--color-good)] leading-none font-semibold"
             >+{temp}</span

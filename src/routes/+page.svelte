@@ -36,11 +36,24 @@
   });
 </script>
 
+<!-- One snippet per cockpit panel, so the masonry can lay them out uniformly. -->
+{#snippet hpPanel()}<HPPanel />{/snippet}
+{#snippet combat()}<Combat />{/snippet}
+{#snippet conditions()}<Conditions />{/snippet}
+{#snippet skills()}<Skills />{/snippet}
+{#snippet weapons()}<Weapons />{/snippet}
+{#snippet deathSaves()}<DeathSaves />{/snippet}
+{#snippet resources()}<Resources />{/snippet}
+{#snippet spellcasting()}<Spellcasting />{/snippet}
+{#snippet features()}<Features />{/snippet}
+
 <div class="h-screen flex flex-col overflow-hidden">
   <Topbar />
 
   <div class="flex-1 flex overflow-hidden">
-    <Rail />
+    {#if app.sheet}
+      <Rail />
+    {/if}
 
     <!-- Main grid -->
     <main class="flex-1 overflow-y-auto p-2">
@@ -59,26 +72,33 @@
         <!-- Build mode: identity, abilities, classes, choice resolver -->
         <BuildPanel />
       {:else if app.computed}
-        <!-- Dense cockpit grid (Sheet / play mode) -->
-        <div class="grid grid-cols-12 gap-2 auto-rows-min">
-          <div class="col-span-12"><Abilities /></div>
-          <!-- Play controls row: HP + rests prominent -->
-          <div class="col-span-5"><HPPanel /></div>
-          <div class="col-span-7"><RestBar /></div>
-          <div class="col-span-5"><Combat /></div>
-          <div class="col-span-7"><Conditions /></div>
-          <div class="col-span-4 row-span-3"><Skills /></div>
-          <div class="col-span-8"><Weapons /></div>
+        <!-- Dense cockpit. Full-width header strips, then a multi-column masonry
+             so variable-height panels pack with no holes and reflow responsively. -->
+        <div class="flex flex-col gap-2">
+          <Abilities />
+          <RestBar />
+        </div>
+        <div class="mt-2 columns-1 md:columns-2 xl:columns-3 gap-2 [column-fill:balance]">
+          {#snippet item(c: import('svelte').Snippet)}
+            <div class="mb-2 break-inside-avoid">{@render c()}</div>
+          {/snippet}
+          {@render item(hpPanel)}
+          {@render item(combat)}
+          {@render item(conditions)}
+          {@render item(skills)}
+          {@render item(weapons)}
           {#if app.computed.current_hp === 0}
-            <div class="col-span-8"><DeathSaves /></div>
+            {@render item(deathSaves)}
           {/if}
-          <div class="col-span-8"><Resources /></div>
-          <div class="col-span-8"><Spellcasting /></div>
-          <div class="col-span-8"><Features /></div>
+          {@render item(resources)}
+          {@render item(spellcasting)}
+          {@render item(features)}
         </div>
       {/if}
     </main>
 
-    <Inspector />
+    {#if app.sheet}
+      <Inspector />
+    {/if}
   </div>
 </div>
