@@ -70,6 +70,7 @@ pub struct ResourceView {
 #[derive(Clone, Debug, Serialize)]
 pub struct SpellSlotView {
     pub level: u8,
+    pub current: i32,
     pub max: i32,
 }
 
@@ -214,7 +215,12 @@ pub fn compute(sheet: &CharacterSheet, content: &ContentDb) -> ComputedCharacter
     for n in 1..=9u8 {
         let max = ctx.eval(&StatId::SpellSlotMax(SlotLevel(n)));
         if max > 0 {
-            spell_slots.push(SpellSlotView { level: n, max });
+            let spent = sheet.slots_expended.get(&n).copied().unwrap_or(0) as i32;
+            spell_slots.push(SpellSlotView {
+                level: n,
+                current: (max - spent).max(0),
+                max,
+            });
         }
     }
     let spellcasting = built

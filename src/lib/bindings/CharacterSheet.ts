@@ -19,6 +19,10 @@ abilities: { [key in Ability]?: number }, species?: string | null, background?: 
  */
 resources: { [key in ResourceId]: number }, 
 /**
+ * Spell slots expended, by slot level (max is computed).
+ */
+slots_expended: { [key in number]: number }, 
+/**
  * Hit dice spent, by die size.
  */
 hit_dice_spent: { [key in number]: number }, conditions: Array<string>, exhaustion: number, 

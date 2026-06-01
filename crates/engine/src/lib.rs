@@ -21,6 +21,7 @@ pub mod eval;
 pub mod feature;
 pub mod ids;
 pub mod resource;
+pub mod rest;
 pub mod sheet;
 pub mod value;
 
@@ -46,6 +47,7 @@ pub use ids::{
     Ability, CastingSource, ClassId, MovementKind, ResourceId, Skill, SlotLevel, StatId, WeaponKind,
 };
 pub use resource::{HitDiePool, Recharge, ResourceDef, ResourceKind};
+pub use rest::{rest, RestKind};
 pub use sheet::{
     ArmorItem, ArmorKind, CharacterSheet, ClassEntry, DeathSaves, Equipment, HpState, Meta,
     RecordedChoice, WeaponInstance,

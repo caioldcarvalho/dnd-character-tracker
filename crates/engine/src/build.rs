@@ -277,40 +277,68 @@ impl<'a> Builder<'a> {
     }
 
     fn hit_points(&mut self) {
-        let s = self.sheet;
+        // Pre-collect (sides, avg, src, levels) per class so the immutable borrow
+        // of `self.sheet` ends before the mutable `self.push` calls below.
+        struct ClassHp {
+            sides: u8,
+            avg: i32,
+            src: SourceRef,
+            levels: u8,
+        }
+        let classes: Vec<ClassHp> = self
+            .sheet
+            .classes
+            .iter()
+            .map(|entry| {
+                let sides = self.class_hit_die(&entry.class);
+                ClassHp {
+                    sides,
+                    avg: sides as i32 / 2 + 1,
+                    src: SourceRef::Class {
+                        class: entry.class.clone(),
+                        feature: "Hit Points".into(),
+                        level: entry.level,
+                    },
+                    levels: entry.level,
+                }
+            })
+            .collect();
+        // Per-level HP rolls override the fixed averages. Level 1 of the first
+        // class always takes the max die; remaining levels consume `rolled` in
+        // order, falling back to the average when no roll is recorded.
+        let rolled: Vec<i32> = self.sheet.hp.rolled.iter().map(|&r| r as i32).collect();
+        let mut roll_idx = 0usize;
+
         let mut first = true;
-        for entry in &s.classes {
-            let sides = self.class_hit_die(&entry.class);
-            let avg = sides as i32 / 2 + 1;
-            let src = SourceRef::Class {
-                class: entry.class.clone(),
-                feature: "Hit Points".into(),
-                level: entry.level,
-            };
+        for c in &classes {
+            let start = if first { 1 } else { 0 };
             if first {
                 self.push(
-                    src.clone(),
-                    Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(sides as i32))
-                        .note(format!("L1 max d{sides}")),
+                    c.src.clone(),
+                    Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(c.sides as i32))
+                        .note(format!("L1 max d{}", c.sides)),
                 );
-                if entry.level > 1 {
+                first = false;
+            }
+            for _ in start..c.levels {
+                if let Some(&r) = rolled.get(roll_idx) {
+                    roll_idx += 1;
                     self.push(
-                        src,
-                        Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(avg * (entry.level as i32 - 1)))
-                            .note(format!("avg d{sides} ×{}", entry.level - 1)),
+                        c.src.clone(),
+                        Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(r))
+                            .note(format!("rolled d{}", c.sides)),
+                    );
+                } else {
+                    self.push(
+                        c.src.clone(),
+                        Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(c.avg))
+                            .note(format!("avg d{}", c.sides)),
                     );
                 }
-                first = false;
-            } else {
-                self.push(
-                    src,
-                    Contribution::add(StatId::MaxHitPoints, ValueExpr::lit(avg * entry.level as i32))
-                        .note(format!("avg d{sides} ×{}", entry.level)),
-                );
             }
         }
         // CON modifier per character level.
-        let total = s.total_level() as i32;
+        let total = self.sheet.total_level() as i32;
         if total > 0 {
             self.push(
                 SourceRef::Base,

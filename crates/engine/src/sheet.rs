@@ -138,6 +138,9 @@ pub struct CharacterSheet {
     /// Current value of each resource pool (max is computed).
     #[serde(default)]
     pub resources: BTreeMap<ResourceId, i32>,
+    /// Spell slots expended, by slot level (max is computed).
+    #[serde(default)]
+    pub slots_expended: BTreeMap<u8, u8>,
     /// Hit dice spent, by die size.
     #[serde(default)]
     pub hit_dice_spent: BTreeMap<u8, u8>,
@@ -178,6 +181,7 @@ impl CharacterSheet {
             choices: Vec::new(),
             hp: HpState::default(),
             resources: BTreeMap::new(),
+            slots_expended: BTreeMap::new(),
             hit_dice_spent: BTreeMap::new(),
             conditions: Vec::new(),
             exhaustion: 0,
