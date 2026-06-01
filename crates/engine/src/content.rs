@@ -9,6 +9,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::Path;
 
+// Content baked into the binary at compile time by build.rs: a slice of
+// (subdir, file-contents) pairs. Powers `ContentDb::embedded()`.
+include!(concat!(env!("OUT_DIR"), "/embedded_content.rs"));
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum Progression {
@@ -170,6 +174,34 @@ impl ContentDb {
         self.feats.get(id)
     }
 
+    /// Build the database from content embedded into the binary at compile time
+    /// (see `build.rs`). This is what the packaged app uses when no external
+    /// `content/` directory is present, so it ships self-contained.
+    pub fn embedded() -> Result<Self, EngineError> {
+        let mut db = ContentDb::default();
+        for (kind, text) in EMBEDDED_CONTENT {
+            match *kind {
+                "classes" => insert_all(parse_text::<ClassDef>(text, kind)?, |c| {
+                    db.classes.insert(c.id.0.clone(), c);
+                }),
+                "subclasses" => insert_all(parse_text::<SubclassDef>(text, kind)?, |s| {
+                    db.subclasses.insert(s.id.clone(), s);
+                }),
+                "species" => insert_all(parse_text::<SpeciesDef>(text, kind)?, |s| {
+                    db.species.insert(s.id.clone(), s);
+                }),
+                "backgrounds" => insert_all(parse_text::<BackgroundDef>(text, kind)?, |b| {
+                    db.backgrounds.insert(b.id.clone(), b);
+                }),
+                "feats" => insert_all(parse_text::<Feature>(text, kind)?, |f| {
+                    db.feats.insert(f.id.clone(), f);
+                }),
+                _ => {}
+            }
+        }
+        Ok(db)
+    }
+
     /// Load every `*.json` file under `root/{classes,subclasses,species,feats}`,
     /// each file holding one definition. Missing subdirectories are skipped.
     pub fn load_dir(root: &Path) -> Result<Self, EngineError> {
@@ -190,6 +222,25 @@ impl ContentDb {
             db.feats.insert(ft.id.clone(), ft);
         }
         Ok(db)
+    }
+}
+
+/// Parse one JSON string holding a single definition or an array of them.
+fn parse_text<T: for<'de> Deserialize<'de>>(text: &str, label: &str) -> Result<Vec<T>, EngineError> {
+    let mkerr = |e: serde_json::Error| EngineError::Parse {
+        path: format!("<embedded {label}>"),
+        source: e,
+    };
+    if text.trim_start().starts_with('[') {
+        serde_json::from_str::<Vec<T>>(text).map_err(mkerr)
+    } else {
+        serde_json::from_str::<T>(text).map(|v| vec![v]).map_err(mkerr)
+    }
+}
+
+fn insert_all<T>(items: Vec<T>, mut insert: impl FnMut(T)) {
+    for item in items {
+        insert(item);
     }
 }
 

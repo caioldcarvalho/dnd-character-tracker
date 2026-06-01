@@ -35,9 +35,8 @@ fn find_content_dir() -> Option<PathBuf> {
     candidates.into_iter().find(|p| p.join("classes").is_dir())
 }
 
-/// The compile-time-embedded content, built by build.rs into `content_gen.rs`.
-/// Until that generation is wired, this returns an empty DB; the dev path above
-/// covers `tauri dev`. (M0/M1 always run from the repo, so the dir is found.)
+/// The compile-time-embedded content (baked in by the engine's build.rs). This
+/// is what the packaged app uses, so it ships self-contained.
 fn embedded() -> ContentDb {
-    ContentDb::default()
+    ContentDb::embedded().unwrap_or_default()
 }
