@@ -33,4 +33,8 @@ active_effects: Array<string>, equipment: Equipment, weapons: Array<WeaponInstan
 /**
  * The spell currently being concentrated on, if any.
  */
-concentration?: string | null, death_saves: DeathSaves, inspiration: boolean, };
+concentration?: string | null, death_saves: DeathSaves, inspiration: boolean, 
+/**
+ * Free-form player notes (markdown/plain text).
+ */
+notes: string, };

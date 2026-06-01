@@ -162,6 +162,9 @@ pub struct CharacterSheet {
     pub death_saves: DeathSaves,
     #[serde(default)]
     pub inspiration: bool,
+    /// Free-form player notes (markdown/plain text).
+    #[serde(default)]
+    pub notes: String,
 }
 
 impl CharacterSheet {
@@ -191,6 +194,7 @@ impl CharacterSheet {
             concentration: None,
             death_saves: DeathSaves::default(),
             inspiration: false,
+            notes: String::new(),
         }
     }
 
