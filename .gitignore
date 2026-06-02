@@ -35,3 +35,10 @@ COGITLOG
 
 # Claude Code local dir
 .claude/
+
+# Generated WASM build of the engine (run `npm run build:wasm` to regenerate).
+# ~3 MB binary, rebuilt from crates/wasm — not committed.
+/src/lib/wasm/
+
+# Local dev scratch (chrome-devtools web-check screenshots, etc.)
+/.dev/

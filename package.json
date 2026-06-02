@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "build:wasm": "cargo build -p rpgman-wasm --target wasm32-unknown-unknown && wasm-bindgen target/wasm32-unknown-unknown/debug/rpgman_wasm.wasm --target web --out-dir src/lib/wasm --out-name rpgman_wasm",
     "tauri": "tauri"
   },
   "devDependencies": {
