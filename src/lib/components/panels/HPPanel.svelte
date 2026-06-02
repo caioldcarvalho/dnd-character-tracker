@@ -7,6 +7,9 @@
   const max = $derived(c?.max_hp?.total ?? 0);
   const temp = $derived(c?.temp_hp ?? 0);
 
+  // "Downed" only applies to a real character (max HP > 0). A freshly-created
+  // character is at 0/0 because it has no class yet — that's unbuilt, not dying.
+  const downed = $derived(current === 0 && max > 0);
   const pct = $derived(max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0);
   const barColor = $derived(
     pct > 50
@@ -55,7 +58,7 @@
         >
           <span
             class="num font-semibold text-2xl leading-none group-hover:text-[var(--color-accent)]"
-            style="color: {current === 0 ? 'var(--color-bad)' : 'var(--color-ink)'};"
+            style="color: {downed ? 'var(--color-bad)' : 'var(--color-ink)'};"
             >{current}</span
           >
           <span
@@ -68,11 +71,13 @@
             >+{temp}</span
           >
         {/if}
-        {#if current === 0}
+        {#if downed}
           <span
             class="ml-auto text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded bg-[var(--color-bad)]/15 text-[var(--color-bad)]"
             >Unconscious</span
           >
+        {:else if max === 0}
+          <span class="ml-auto text-[9px] text-[var(--color-muted)]">Add a class to set HP</span>
         {/if}
       </div>
 

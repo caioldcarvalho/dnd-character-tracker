@@ -2,7 +2,10 @@
   import Card from '../Card.svelte';
   import { app } from '../../state.svelte';
 
-  const dying = $derived(app.computed?.current_hp === 0);
+  // Only a built character (max HP > 0) can be dying; a new 0/0 sheet is unbuilt.
+  const dying = $derived(
+    app.computed?.current_hp === 0 && (app.computed?.max_hp?.total ?? 0) > 0
+  );
   const ds = $derived(app.sheet?.death_saves ?? { successes: 0, failures: 0 });
   const successes = $derived(ds.successes ?? 0);
   const failures = $derived(ds.failures ?? 0);

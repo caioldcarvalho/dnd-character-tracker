@@ -96,7 +96,7 @@
           {@render item(conditions)}
           {@render item(skills)}
           {@render item(weapons)}
-          {#if app.computed.current_hp === 0}
+          {#if app.computed.current_hp === 0 && (app.computed.max_hp?.total ?? 0) > 0}
             {@render item(deathSaves)}
           {/if}
           {@render item(resources)}
