@@ -9,7 +9,7 @@
     { id: 'notes', label: 'Notes', icon: '✎' }
   ] as const;
 
-  const pendingCount = $derived(app.computed?.pending_choices?.length ?? 0);
+  const pendingCount = $derived(app.buildTodoCount);
 
   // Return to the library. If there are unsaved changes, confirm first.
   function toLibrary() {

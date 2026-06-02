@@ -48,6 +48,27 @@ class AppState {
     return this.computed?.pending_choices ?? [];
   }
 
+  /**
+   * Build prerequisites a fresh character must satisfy before it's a real PC.
+   * These are NOT engine "pending choices" (a classless character has none), so
+   * without them a blank sheet falsely reads as "all choices resolved ✓".
+   */
+  get missingPrereqs(): { key: string; label: string }[] {
+    const s = this.sheet;
+    if (!s) return [];
+    const out: { key: string; label: string }[] = [];
+    if (!s.classes || s.classes.length === 0)
+      out.push({ key: 'class', label: 'Choose a class to begin' });
+    if (!s.species) out.push({ key: 'species', label: 'Pick a species' });
+    if (!s.background) out.push({ key: 'background', label: 'Pick a background' });
+    return out;
+  }
+
+  /** Total outstanding build work: unmet prerequisites + pending level-up choices. */
+  get buildTodoCount(): number {
+    return this.missingPrereqs.length + this.pendingChoices.length;
+  }
+
   // ---- lifecycle ----
 
   /** Fetch the content catalog once (for build pickers). */
@@ -502,6 +523,7 @@ function blankSheet(name: string): Sheet {
     choices: [],
     hp: { current: 0, temp: 0, rolled: [] },
     resources: {},
+    slots_expended: {},
     hit_dice_spent: {},
     conditions: [],
     exhaustion: 0,
