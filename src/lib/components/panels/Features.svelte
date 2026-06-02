@@ -41,12 +41,20 @@
           {#if isOpen}
             <ul class="flex flex-col gap-0.5 pl-3">
               {#each items as f}
-                <li
-                  class="text-[11px] leading-tight group"
-                  title={f.description}
-                >
-                  <span class="text-[var(--color-ink)]">{f.name}</span>
-                  <span class="text-[9px] text-[var(--color-muted)]"> · {f.source}</span>
+                <li class="text-[11px] leading-tight">
+                  <button
+                    type="button"
+                    onclick={() => app.inspectFeature(f)}
+                    class="text-left w-full group hover:text-[var(--color-accent)] cursor-pointer"
+                    title={f.description ? 'Click to read what this does' : f.name}
+                  >
+                    <span class="text-[var(--color-ink)] group-hover:text-[var(--color-accent)]"
+                      >{f.name}</span
+                    >{#if f.description}<span
+                        class="text-[8px] text-[var(--color-muted)] group-hover:text-[var(--color-accent)]"
+                      > ⓘ</span
+                      >{/if}<span class="text-[9px] text-[var(--color-muted)]"> · {f.source}</span>
+                  </button>
                 </li>
               {/each}
             </ul>

@@ -20,6 +20,7 @@
   import NotesView from '$lib/components/sections/NotesView.svelte';
   import { app, inTauri } from '$lib/state.svelte';
   import { SAMPLE_SHEET } from '$lib/sample';
+  import * as ipc from '$lib/ipc';
   import { onMount } from 'svelte';
 
   let loadError = $state<string | null>(null);
@@ -27,11 +28,15 @@
   onMount(async () => {
     // Preload the content catalog for build pickers.
     app.ensureCatalog();
-    // In browser preview (no backend), load the bundled sample so the cockpit
-    // has something to show. In the app, the open/new menu drives loading.
+    // In the browser (no Tauri), seed the cockpit with the bundled sample — but
+    // only on a first visit. If the visitor already saved characters (localStorage),
+    // leave the sheet empty so the library lists them instead of clobbering work.
     if (!inTauri()) {
       try {
-        await app.setSheet(structuredClone(SAMPLE_SHEET));
+        const saved = await ipc.listCharacters();
+        if (saved.length === 0) {
+          await app.setSheet(structuredClone(SAMPLE_SHEET));
+        }
       } catch (e) {
         loadError = String(e);
       }
@@ -106,7 +111,9 @@
       {/if}
     </main>
 
-    {#if app.sheet}
+    <!-- Inspector only where stat breakdowns are relevant; on Notes/Spells it
+         would just show a stale, unrelated breakdown and waste the width. -->
+    {#if app.sheet && (app.section === 'sheet' || app.section === 'build' || app.section === 'gear')}
       <Inspector />
     {/if}
   </div>

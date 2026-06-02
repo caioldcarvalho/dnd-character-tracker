@@ -23,6 +23,29 @@
   function bandOf(line: any) {
     return BAND[line.band] ?? { label: line.band, color: 'var(--color-muted)' };
   }
+
+  // Plain-language meaning for each stat — the breakdown shows what a number is
+  // MADE OF; newcomers also need to know what it IS. Keyed by StatId.kind.
+  const STAT_HELP: Record<string, string> = {
+    'armor-class': 'Armor Class — how hard you are to hit. Higher is better.',
+    'max-hit-points': 'Hit Points — how much damage you can take before falling.',
+    'initiative': 'Initiative — your roll to decide turn order in combat.',
+    'proficiency-bonus': "Proficiency Bonus — added to things you're trained in.",
+    'ability-score': 'Ability Score — your raw 1–20 stat; its modifier drives rolls.',
+    'ability-modifier': 'Ability Modifier — the number you add to related rolls.',
+    'saving-throw': 'Saving Throw — a roll to resist an effect (a spell, poison…).',
+    'skill-bonus': 'Skill — added to a check when you attempt something (climb, persuade…).',
+    'passive-score': "Passive Score — your always-on result without rolling (e.g. noticing things).",
+    'speed': 'Speed — how far you can move on your turn, in feet.',
+    'carrying-capacity': 'Carrying Capacity — the most weight you can carry, in pounds.',
+    'weapon-attack-bonus': 'Attack Bonus — added to your d20 roll to hit with this weapon.',
+    'weapon-damage-bonus': 'Damage Bonus — added to the damage dice when you hit.',
+    'weapon-masteries-known': 'Weapon Masteries — how many weapon mastery properties you can use.',
+    'spell-save-dc': 'Spell Save DC — the number enemies must beat to resist your spells.',
+    'spell-attack-bonus': 'Spell Attack — added to your d20 roll to hit with a spell.',
+    'attacks-per-action': 'Attacks per Action — how many attacks you make when you take the Attack action.'
+  };
+  const help = $derived(STAT_HELP[breakdown?.stat?.kind ?? '']);
 </script>
 
 <aside
@@ -43,7 +66,24 @@
     {/if}
   </header>
 
-  {#if !data || !breakdown}
+  {#if data?.feature}
+    <div class="flex-1 overflow-y-auto">
+      <div class="px-3 py-3 border-b border-[var(--color-border)]">
+        <div class="text-[10px] uppercase tracking-wide text-[var(--color-muted)]">Feature</div>
+        <div class="text-sm font-semibold leading-tight mt-0.5 text-[var(--color-ink)]">
+          {data.feature.name}
+        </div>
+        {#if data.feature.source}
+          <div class="text-[10px] text-[var(--color-muted)] mt-0.5">{data.feature.source}</div>
+        {/if}
+      </div>
+      <div
+        class="px-3 py-3 text-[12px] leading-relaxed text-[var(--color-ink)] whitespace-pre-line"
+      >
+        {data.feature.description || 'No description available for this feature yet.'}
+      </div>
+    </div>
+  {:else if !data || !breakdown}
     <div class="flex-1 flex items-center justify-center p-6 text-center">
       <p class="text-[11px] text-[var(--color-muted)] leading-relaxed">
         Click any stat to see <br />exactly what contributes to it.
@@ -57,6 +97,9 @@
           {breakdown.label}
         </div>
         <div class="num text-3xl font-bold leading-tight mt-0.5">{breakdown.total}</div>
+        {#if help}
+          <p class="text-[10px] text-[var(--color-muted)] leading-snug mt-1">{help}</p>
+        {/if}
       </div>
 
       <!-- Contribution lines -->

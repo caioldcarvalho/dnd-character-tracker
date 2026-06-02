@@ -2,7 +2,7 @@
   // Character open/new menu. Lists saved characters (Tauri only) and offers a
   // "new character" action. Shown when nothing is loaded, and reachable from the
   // rail. Pure store + ipc; no overlap with the build editors.
-  import { app, inTauri } from '../../state.svelte';
+  import { app } from '../../state.svelte';
   import * as ipc from '../../ipc';
   import { onMount } from 'svelte';
 
@@ -11,7 +11,6 @@
   let err = $state<string | null>(null);
 
   async function refresh() {
-    if (!inTauri()) return;
     loading = true;
     err = null;
     try {
@@ -57,12 +56,6 @@
       {/if}
       {#if loading}
         <p class="text-[11px] text-[var(--color-muted)] px-1 py-2">Loading…</p>
-      {:else if !inTauri()}
-        <p class="text-[11px] text-[var(--color-muted)] px-1 py-3 text-center">
-          Saved characters appear here in the desktop app.<br />Click <span
-            class="text-[var(--color-accent)]">+ New</span
-          > to start one.
-        </p>
       {:else if characters.length === 0}
         <p class="text-[11px] text-[var(--color-muted)] px-1 py-3 text-center">
           No saved characters yet.<br />Click <span class="text-[var(--color-accent)]">+ New</span> to

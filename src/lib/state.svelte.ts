@@ -32,6 +32,8 @@ class AppState {
     stat: any;
     breakdown: Breakdown;
     weaponRef: { index: number; mode: 'attack' | 'damage' } | null;
+    /** A non-stat detail view: a feature's rules text (name + description + source). */
+    feature?: { name: string; description: string; source: string } | null;
   } | null>(null);
   /** Whether the last compute hit an error. */
   error = $state<string | null>(null);
@@ -103,7 +105,7 @@ class AppState {
 
   /** Close the current character and return to the library/open menu. */
   async closeCharacter(opts: { saveFirst?: boolean } = {}) {
-    if (opts.saveFirst && this.dirty && inTauri()) {
+    if (opts.saveFirst && this.dirty) {
       await this.save();
     }
     if (this.#saveTimer) {
@@ -460,14 +462,14 @@ class AppState {
   // ---- persistence ----
 
   #scheduleAutosave() {
-    if (!inTauri() || !this.path) return; // only autosave already-saved files
+    if (!this.path) return; // only autosave already-saved files (disk or localStorage)
     if (this.#saveTimer) clearTimeout(this.#saveTimer);
     this.#saveTimer = setTimeout(() => this.save(), 900);
   }
 
   /** Persist to disk. Creates the file on first save (path returned by backend). */
   async save() {
-    if (!this.sheet || !inTauri()) return;
+    if (!this.sheet) return; // persists to disk (Tauri) or localStorage (web)
     this.saving = true;
     try {
       const saved = await ipc.saveCharacter(this.path, this.sheet);
@@ -503,6 +505,16 @@ class AppState {
     if (!w) return;
     const breakdown = mode === 'attack' ? w.attack_breakdown : w.damage_breakdown;
     this.inspecting = { stat: null, breakdown, weaponRef: { index, mode } };
+  }
+
+  /** Show a feature's rules text in the Inspector (name + description + source). */
+  inspectFeature(f: { name: string; description?: string; source?: string }) {
+    this.inspecting = {
+      stat: null,
+      breakdown: null,
+      weaponRef: null,
+      feature: { name: f.name, description: f.description ?? '', source: f.source ?? '' }
+    };
   }
 
   closeInspector() {

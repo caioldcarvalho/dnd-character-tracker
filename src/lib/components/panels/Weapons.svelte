@@ -14,19 +14,19 @@
 
 {#if weapons.length}
   <Card title="Attacks">
-    <table class="w-full text-[11px]">
+    <table class="w-full text-[11px] table-fixed">
       <thead>
         <tr class="text-[9px] uppercase text-[var(--color-muted)] text-left">
           <th class="font-normal pb-1">Weapon</th>
-          <th class="font-normal pb-1 text-right">Atk</th>
-          <th class="font-normal pb-1 text-right">Damage</th>
-          <th class="font-normal pb-1 text-right">Mastery</th>
+          <th class="font-normal pb-1 text-right w-12">Atk</th>
+          <th class="font-normal pb-1 text-right w-28">Damage</th>
+          <th class="font-normal pb-1 text-right w-16">Mastery</th>
         </tr>
       </thead>
       <tbody>
         {#each weapons as w, i}
           <tr class="border-t border-[var(--color-border)]/50">
-            <td class="py-1 truncate">{w.name}</td>
+            <td class="py-1 truncate pr-2" title={w.name}>{w.name}</td>
             <td class="py-1 text-right">
               <button
                 type="button"
