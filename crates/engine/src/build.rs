@@ -6,7 +6,7 @@
 use crate::content::{ContentDb, Progression};
 use crate::contribution::{Contribution, SourceRef};
 use crate::feature::{Activation, ChoiceOptions, ChoicePoint, Feature, ProficiencyGrant};
-use crate::ids::{Ability, CastingSource, MovementKind, ResourceId, Skill, SlotLevel, StatId};
+use crate::ids::{Ability, CastingSource, MovementKind, ResourceId, Skill, SlotLevel, StatId, WeaponKind};
 use crate::resource::{HitDiePool, ResourceDef};
 use crate::sheet::CharacterSheet;
 use crate::value::ValueExpr;
@@ -548,6 +548,15 @@ impl<'a> Builder<'a> {
                 Contribution::add(StatId::SpellAttackBonus(cs.clone()), ValueExpr::ability_mod(spec.ability))
                     .note(spec.ability.abbr()),
             );
+            // 2024 exhaustion also penalizes spell attack rolls (a d20 Test).
+            let exh = self.sheet.exhaustion as i32;
+            if exh != 0 {
+                self.push(
+                    SourceRef::Condition { id: "exhaustion".into() },
+                    Contribution::add(StatId::SpellAttackBonus(cs.clone()), ValueExpr::lit(-2 * exh))
+                        .note(format!("Exhaustion {exh}")),
+                );
+            }
 
             let prepared = spec
                 .prepared_per_level
@@ -720,18 +729,34 @@ impl<'a> Builder<'a> {
         }
         let src = SourceRef::Condition { id: "exhaustion".into() };
         let note = format!("Exhaustion {e}");
+        let d20 = -2 * e;
+        // 2024: −2 per Exhaustion level on EVERY d20 Test — saving throws,
+        // ability checks (skills + initiative), AND attack rolls. (Spell attack
+        // rolls get the same penalty in `spellcasting`, where the source is known.)
         for a in Ability::ALL {
             self.push(
                 src.clone(),
-                Contribution::add(StatId::SavingThrow(a), ValueExpr::lit(-2 * e)).note(note.clone()),
+                Contribution::add(StatId::SavingThrow(a), ValueExpr::lit(d20)).note(note.clone()),
             );
         }
         for sk in Skill::ALL {
             self.push(
                 src.clone(),
-                Contribution::add(StatId::SkillBonus(sk), ValueExpr::lit(-2 * e)).note(note.clone()),
+                Contribution::add(StatId::SkillBonus(sk), ValueExpr::lit(d20)).note(note.clone()),
             );
         }
+        self.push(
+            src.clone(),
+            Contribution::add(StatId::Initiative, ValueExpr::lit(d20)).note(note.clone()),
+        );
+        for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+            self.push(
+                src.clone(),
+                Contribution::add(StatId::WeaponAttackBonus(kind), ValueExpr::lit(d20))
+                    .note(note.clone()),
+            );
+        }
+        // ...and −5 ft of Speed per Exhaustion level.
         self.push(
             src,
             Contribution::add(StatId::Speed(MovementKind::Walk), ValueExpr::lit(-5 * e)).note(note),
