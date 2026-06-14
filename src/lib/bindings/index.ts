@@ -36,6 +36,8 @@ export type { HpState } from './HpState';
 export type { Meta } from './Meta';
 export type { MovementKind } from './MovementKind';
 export type { NamedOption } from './NamedOption';
+export type { Note } from './Note';
+export type { NoteCategory } from './NoteCategory';
 export type { PassiveView } from './PassiveView';
 export type { PendingChoice } from './PendingChoice';
 export type { ProficiencyGrant } from './ProficiencyGrant';

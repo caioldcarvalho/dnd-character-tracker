@@ -162,9 +162,68 @@ pub struct CharacterSheet {
     pub death_saves: DeathSaves,
     #[serde(default)]
     pub inspiration: bool,
-    /// Free-form player notes (markdown/plain text).
+    /// Structured player notes: categorized, pinnable cards. Accepts the legacy
+    /// free-form `String` shape on load (migrated into one General note).
+    #[serde(default, deserialize_with = "de_notes")]
+    pub notes: Vec<Note>,
+}
+
+/// A single player note card (backstory, quest log, NPC, etc.).
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Note {
+    pub id: String,
+    pub title: String,
+    pub content: String,
     #[serde(default)]
-    pub notes: String,
+    pub category: NoteCategory,
+    #[serde(default)]
+    pub pinned: bool,
+    /// ISO-8601 timestamps, set by the frontend (the engine stays time-free).
+    #[serde(default)]
+    pub created_at: String,
+    #[serde(default)]
+    pub updated_at: String,
+}
+
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "kebab-case")]
+pub enum NoteCategory {
+    #[default]
+    General,
+    Quest,
+    Npc,
+    Location,
+    Lore,
+    Combat,
+}
+
+/// Backward-compatible note loading: accepts the new `Vec<Note>` shape or the
+/// legacy free-form `String` (wrapped into a single General note if non-empty).
+fn de_notes<'de, D>(d: D) -> Result<Vec<Note>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Compat {
+        Notes(Vec<Note>),
+        Legacy(String),
+    }
+    Ok(match Compat::deserialize(d)? {
+        Compat::Notes(v) => v,
+        Compat::Legacy(s) if s.trim().is_empty() => Vec::new(),
+        Compat::Legacy(s) => vec![Note {
+            id: String::new(),
+            title: "Notes".into(),
+            content: s,
+            category: NoteCategory::General,
+            pinned: false,
+            created_at: String::new(),
+            updated_at: String::new(),
+        }],
+    })
 }
 
 impl CharacterSheet {
@@ -194,7 +253,7 @@ impl CharacterSheet {
             concentration: None,
             death_saves: DeathSaves::default(),
             inspiration: false,
-            notes: String::new(),
+            notes: Vec::new(),
         }
     }
 

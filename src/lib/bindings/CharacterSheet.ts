@@ -5,6 +5,7 @@ import type { DeathSaves } from "./DeathSaves";
 import type { Equipment } from "./Equipment";
 import type { HpState } from "./HpState";
 import type { Meta } from "./Meta";
+import type { Note } from "./Note";
 import type { RecordedChoice } from "./RecordedChoice";
 import type { ResourceId } from "./ResourceId";
 import type { WeaponInstance } from "./WeaponInstance";
@@ -35,6 +36,7 @@ active_effects: Array<string>, equipment: Equipment, weapons: Array<WeaponInstan
  */
 concentration?: string | null, death_saves: DeathSaves, inspiration: boolean, 
 /**
- * Free-form player notes (markdown/plain text).
+ * Structured player notes: categorized, pinnable cards. Accepts the legacy
+ * free-form `String` shape on load (migrated into one General note).
  */
-notes: string, };
+notes: Array<Note>, };

@@ -6,7 +6,7 @@
 // the document dirty (with optional debounced autosave).
 
 import * as ipc from './ipc';
-import type { Catalog } from '$bindings';
+import type { Catalog, Note } from '$bindings';
 
 type Sheet = any;
 type Computed = any;
@@ -85,7 +85,7 @@ class AppState {
 
   /** Load a sheet and compute it. */
   async setSheet(sheet: Sheet, path: string | null = null) {
-    this.sheet = sheet;
+    this.sheet = normalizeNotes(sheet);
     this.path = path;
     this.dirty = false;
     await this.recompute();
@@ -231,9 +231,26 @@ class AppState {
 
   // ---- notes ----
 
-  setNotes(text: string) {
+  addNote(note: Note) {
     return this.#edit((s) => {
-      s.notes = text;
+      s.notes = [...(s.notes ?? []), note];
+    });
+  }
+  updateNote(id: string, updates: Partial<Note>) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).map((n: Note) => (n.id === id ? { ...n, ...updates } : n));
+    });
+  }
+  deleteNote(id: string) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).filter((n: Note) => n.id !== id);
+    });
+  }
+  toggleNotePin(id: string) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).map((n: Note) =>
+        n.id === id ? { ...n, pinned: !n.pinned } : n
+      );
     });
   }
 
@@ -545,8 +562,41 @@ function blankSheet(name: string): Sheet {
     concentration: null,
     death_saves: { successes: 0, failures: 0 },
     inspiration: false,
-    notes: ''
+    notes: []
   };
+}
+
+/** Short unique id for client-created notes. */
+export function noteId(): string {
+  return Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+}
+
+/**
+ * Coerce a sheet's `notes` into the structured `Note[]` shape. Sheets loaded
+ * straight from localStorage (or the bundled sample) predate the card system and
+ * may carry the legacy free-form string, or omit notes entirely.
+ */
+function normalizeNotes(sheet: Sheet): Sheet {
+  if (!sheet) return sheet;
+  const n = sheet.notes;
+  if (Array.isArray(n)) return sheet;
+  if (typeof n === 'string' && n.trim()) {
+    const now = new Date().toISOString();
+    sheet.notes = [
+      {
+        id: noteId(),
+        title: 'Notes',
+        content: n,
+        category: 'general',
+        pinned: false,
+        created_at: now,
+        updated_at: now
+      }
+    ];
+  } else {
+    sheet.notes = [];
+  }
+  return sheet;
 }
 
 export const app = new AppState();
