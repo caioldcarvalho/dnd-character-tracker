@@ -15,6 +15,28 @@
     cha: 'CHA'
   };
 
+  // One-line skill descriptions for non-experts (D&D 2024 core skills).
+  const SKILL_DESC: Record<string, string> = {
+    acrobatics: 'Dex · balance, tumble, aerial maneuvers',
+    'animal-handling': 'Wis · calm, control, or intuit animals',
+    arcana: 'Int · spells, magic items, planes of existence',
+    athletics: 'Str · climb, jump, swim, grapple',
+    deception: 'Cha · hide the truth, mislead, bluff',
+    history: 'Int · lore, past events, legendary figures',
+    insight: 'Wis · read intentions, detect lies',
+    intimidation: 'Cha · coerce through threats or force of will',
+    investigation: 'Int · search for clues, deduce hidden facts',
+    medicine: 'Wis · diagnose illness, stabilize the dying',
+    nature: 'Int · terrain, plants, weather, natural creatures',
+    perception: 'Wis · notice things with your senses',
+    performance: 'Cha · entertain through music, dance, or story',
+    persuasion: 'Cha · influence others with tact and reason',
+    religion: 'Int · deities, rites, prayers, undead lore',
+    'sleight-of-hand': 'Dex · pick pockets, palm objects, fine tricks',
+    stealth: 'Dex · move unseen and unheard',
+    survival: 'Wis · track prey, navigate wilderness, forage'
+  };
+
   // kebab / lowercase id -> Title Case label.
   function title(id: string): string {
     return id.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
@@ -134,22 +156,30 @@
 
   <!-- control -->
   {#if kind === 'skills' || kind === 'expertise'}
-    <div class="flex flex-wrap gap-1">
+    <div class="flex flex-col gap-1">
       {#each choice.options.from as id (id)}
         {@const on = picks.includes(id)}
         {@const full = picks.length >= choose && !on}
+        {@const desc = SKILL_DESC[id] ?? null}
         <button
           type="button"
           onclick={() => toggleMulti(id)}
           disabled={full}
-          class="px-2 py-0.5 rounded text-[10px] border transition-colors
+          class="flex flex-col items-start gap-0 px-2 py-1 rounded text-left border transition-colors
             {on
             ? 'bg-[var(--color-accent)] text-[var(--color-panel)] border-[var(--color-accent)]'
             : full
               ? 'bg-[var(--color-panel-2)] border-[var(--color-border)] text-[var(--color-muted)] opacity-40 cursor-not-allowed'
               : 'bg-[var(--color-panel-2)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}"
         >
-          {title(id)}
+          <span class="text-[10px] font-medium leading-tight">{title(id)}</span>
+          {#if desc}
+            <span
+              class="text-[9px] leading-tight {on
+                ? 'text-[var(--color-panel)]/80'
+                : 'text-[var(--color-muted)]'}">{desc}</span
+            >
+          {/if}
         </button>
       {/each}
     </div>
@@ -222,7 +252,7 @@
         <option value="" disabled>loading…</option>
       {/if}
       {#each featOptions as f (f.id)}
-        <option value={f.id}>{f.name}</option>
+        <option value={f.id}>{f.name}{f.category ? ` (${title(f.category)})` : ''}</option>
       {/each}
     </select>
   {:else if kind === 'subclass'}
@@ -240,22 +270,37 @@
       {/each}
     </select>
   {:else if kind === 'named'}
-    <div class="flex flex-wrap gap-1">
+    <div class="flex flex-col gap-1">
       {#each choice.options.from as opt (opt.id)}
         {@const on = picks.includes(opt.id)}
         {@const full = picks.length >= choose && !on}
+        <!-- Derive a short hint from contributions if present -->
+        {@const hint = opt.contributions?.length > 0
+          ? opt.contributions
+              .slice(0, 2)
+              .map((c: any) => title(String(c.stat ?? c.id ?? '')))
+              .filter(Boolean)
+              .join(', ')
+          : null}
         <button
           type="button"
           onclick={() => toggleMulti(opt.id)}
           disabled={full}
-          class="px-2 py-0.5 rounded text-[10px] border transition-colors
+          class="flex flex-col items-start gap-0 px-2 py-1 rounded text-left border transition-colors
             {on
             ? 'bg-[var(--color-accent)] text-[var(--color-panel)] border-[var(--color-accent)]'
             : full
               ? 'bg-[var(--color-panel-2)] border-[var(--color-border)] text-[var(--color-muted)] opacity-40 cursor-not-allowed'
               : 'bg-[var(--color-panel-2)] border-[var(--color-border)] hover:border-[var(--color-accent)]'}"
         >
-          {opt.name}
+          <span class="text-[10px] font-medium leading-tight">{opt.name}</span>
+          {#if hint}
+            <span
+              class="text-[9px] leading-tight {on
+                ? 'text-[var(--color-panel)]/80'
+                : 'text-[var(--color-muted)]'}">{hint}</span
+            >
+          {/if}
         </button>
       {/each}
     </div>
