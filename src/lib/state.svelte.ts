@@ -8,6 +8,34 @@
 import * as ipc from './ipc';
 import type { Catalog, Note } from '$bindings';
 
+// ---- Toast system ----
+
+export type ToastKind = 'info' | 'good' | 'warn';
+
+export interface Toast {
+  id: number;
+  msg: string;
+  kind: ToastKind;
+}
+
+let _toastSeq = 0;
+
+class ToastStore {
+  items = $state<Toast[]>([]);
+
+  push(msg: string, kind: ToastKind = 'info') {
+    const id = ++_toastSeq;
+    this.items = [...this.items, { id, msg, kind }];
+    setTimeout(() => this.dismiss(id), 3500);
+  }
+
+  dismiss(id: number) {
+    this.items = this.items.filter((t) => t.id !== id);
+  }
+}
+
+export const toasts = new ToastStore();
+
 type Sheet = any;
 type Computed = any;
 type Breakdown = any;
@@ -298,11 +326,27 @@ class AppState {
   removeClass(index: number) {
     return this.#edit((s) => s.classes.splice(index, 1));
   }
-  setClassLevel(index: number, level: number) {
-    return this.#edit((s) => {
+  async setClassLevel(index: number, level: number) {
+    if (!this.sheet) return;
+    const entry = this.sheet.classes[index];
+    if (!entry) return;
+    const oldLevel = entry.level;
+    const newLevel = Math.max(1, Math.min(20, level));
+    const isLevelUp = newLevel > oldLevel;
+    const prevMaxHp = this.computed?.max_hp?.total ?? 0;
+
+    await this.#edit((s) => {
       const c = s.classes[index];
-      if (c) c.level = Math.max(1, Math.min(20, level));
+      if (c) c.level = newLevel;
     });
+
+    if (isLevelUp) {
+      const newMaxHp = this.computed?.max_hp?.total ?? 0;
+      const hpDelta = newMaxHp - prevMaxHp;
+      const className = entry.class.charAt(0).toUpperCase() + entry.class.slice(1);
+      const hpPart = hpDelta > 0 ? ` (+${hpDelta} max HP)` : '';
+      toasts.push(`Level up! ${className} ${newLevel}${hpPart}`, 'good');
+    }
   }
   setSubclass(index: number, subclassId: string | null) {
     return this.#edit((s) => {
@@ -437,33 +481,32 @@ class AppState {
 
   /**
    * Spend one hit die of the given size, rolling it and adding the CON modifier
-   * to heal HP. Returns { healed, roll, sides } if a die was spent, or null if
+   * to heal HP. Returns { roll, healed, sides } if a die was spent, or null if
    * already at full HP or no dice remain.
    *
    * Rolling is intentionally done here in the frontend (Math.random is fine in
-   * the browser; the Rust engine stays pure/deterministic). The result is
-   * returned so a future feedback layer can surface "Rolled 6 + 2 CON = 8 HP".
+   * the browser; the Rust engine stays pure/deterministic).
    */
-  spendHitDie(sides: number, total: number): Promise<{ healed: number; roll: number; sides: number } | null> {
+  async spendHitDie(sides: number, total: number): Promise<{ roll: number; healed: number; sides: number } | null> {
+    if (!this.sheet) return null;
     const maxHp = this.maxHp;
-    const currentHp = this.sheet?.hp?.current ?? 0;
-    // Nothing to heal if already at full HP or no dice available.
-    const spent = this.sheet?.hit_dice_spent?.[sides] ?? 0;
-    if (currentHp >= maxHp || spent >= total) return Promise.resolve(null);
+    const spent = this.sheet.hit_dice_spent?.[sides] ?? 0;
+    // Nothing to heal if already at full HP or no dice remain.
+    if ((this.sheet.hp?.current ?? 0) >= maxHp || spent >= total) return null;
 
-    // Roll the die (1..sides) and add CON modifier.
+    // Roll the die (1..sides) + the EFFECTIVE CON modifier (the engine already
+    // resolves species/feat bonuses into computed.abilities[].modifier).
     const roll = Math.floor(Math.random() * sides) + 1;
-    const conScore: number = this.computed?.abilities?.find((a: any) => a.id === 'con')?.effective ?? 10;
-    const conMod = Math.floor((conScore - 10) / 2);
-    const healAmount = Math.max(1, roll + conMod);
+    const conMod = this.computed?.abilities?.find((a: any) => a.ability === 'con')?.modifier ?? 0;
+    const healed = Math.max(1, roll + conMod);
 
-    return this.#edit((s) => {
-      // Mark one die as spent.
-      const alreadySpent = s.hit_dice_spent[sides] ?? 0;
-      s.hit_dice_spent[sides] = alreadySpent + 1;
-      // Heal HP, clamped to max.
-      s.hp.current = Math.min(maxHp, s.hp.current + healAmount);
-    }).then(() => ({ healed: healAmount, roll, sides }));
+    await this.#edit((s) => {
+      s.hit_dice_spent[sides] = (s.hit_dice_spent[sides] ?? 0) + 1;
+      s.hp.current = Math.min(maxHp, s.hp.current + healed);
+    });
+
+    toasts.push(`Rolled d${sides} → +${healed} HP`, 'good');
+    return { roll, healed, sides };
   }
 
   // ---- play: rests ----
@@ -478,6 +521,11 @@ class AppState {
         this.dirty = true;
         await this.recompute();
         this.#scheduleAutosave();
+        if (kind === 'long') {
+          toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+        } else {
+          toasts.push('Short rest — short-rest resources recharged', 'info');
+        }
       } catch (e) {
         this.error = String(e);
       }
@@ -514,6 +562,11 @@ class AppState {
           }
         }
       });
+      if (kind === 'long') {
+        toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+      } else {
+        toasts.push('Short rest — short-rest resources recharged', 'info');
+      }
     }
   }
 
