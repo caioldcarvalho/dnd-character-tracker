@@ -197,3 +197,52 @@ Abilities: `str dex con int wis cha`.
 Skills: `acrobatics animal-handling arcana athletics deception history insight
 intimidation investigation medicine nature perception performance persuasion
 religion sleight-of-hand stealth survival`.
+
+## Spells
+
+Spells live in `content/spells/`. Each file holds a JSON **array** of `SpellDef`
+objects. Files are named by level band (e.g. `cantrips.json`, `level-1.json`) but
+the file name has no semantic meaning — the engine reads all `*.json` files in
+the directory.
+
+### SpellDef schema
+
+```json
+{
+  "id": "fire-bolt",            // kebab-case, globally unique
+  "name": "Fire Bolt",          // display name
+  "level": 0,                   // 0 = cantrip, 1–9 = spell level
+  "school": "evocation",        // see SpellSchool below
+  "classes": ["sorcerer", "wizard"],  // class ids that know/prepare this spell
+  "casting_time": "1 action",   // free-form string
+  "range": "120 feet",          // free-form string ("Self", "Touch", "120 feet", …)
+  "components": {
+    "verbal": true,
+    "somatic": true,
+    "material": "a pinch of sulfur"   // omit field entirely when not required
+  },
+  "duration": "Instantaneous",  // free-form string
+  "concentration": false,       // defaults to false if omitted
+  "ritual": false,              // defaults to false if omitted
+  "description": "…"            // rules text; keep to 1–3 sentences for the seed set
+}
+```
+
+### SpellSchool values (kebab-case in JSON)
+
+`abjuration` · `conjuration` · `divination` · `enchantment` ·
+`evocation` · `illusion` · `necromancy` · `transmutation`
+
+### Class ids (for `classes` list)
+
+Use the same kebab-case ids as in `content/classes/`: `barbarian`, `bard`,
+`cleric`, `druid`, `fighter`, `monk`, `paladin`, `ranger`, `rogue`,
+`sorcerer`, `warlock`, `wizard`.
+
+### Notes for bulk authoring
+
+- `components.material` should be omitted (not set to `null`) when the spell
+  has no material component — serde will skip it on serialization too.
+- `concentration` and `ritual` default to `false`; include them only when `true`.
+- Spell ids must be unique across **all** files in `content/spells/`; the engine
+  will overwrite silently on duplicate (last-write-wins from BTreeMap insertion).

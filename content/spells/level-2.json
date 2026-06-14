@@ -1,0 +1,30 @@
+[
+  {
+    "id": "misty-step",
+    "name": "Misty Step",
+    "level": 2,
+    "school": "conjuration",
+    "classes": ["sorcerer", "warlock", "wizard"],
+    "casting_time": "1 bonus action",
+    "range": "Self",
+    "components": { "verbal": true },
+    "duration": "Instantaneous",
+    "concentration": false,
+    "ritual": false,
+    "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see."
+  },
+  {
+    "id": "hold-person",
+    "name": "Hold Person",
+    "level": 2,
+    "school": "enchantment",
+    "classes": ["bard", "cleric", "druid", "sorcerer", "warlock", "wizard"],
+    "casting_time": "1 action",
+    "range": "60 feet",
+    "components": { "verbal": true, "somatic": true, "material": "a small, straight piece of iron" },
+    "duration": "1 minute",
+    "concentration": true,
+    "ritual": false,
+    "description": "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be Paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw. On a success, the spell ends on the target. When you cast this spell using a spell slot of 3rd level or higher, you can target one additional humanoid for each slot level above 2nd."
+  }
+]

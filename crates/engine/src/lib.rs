@@ -23,6 +23,7 @@ pub mod ids;
 pub mod resource;
 pub mod rest;
 pub mod sheet;
+pub mod spell;
 pub mod value;
 
 pub use build::{build, Built, EnvFlags, PendingChoice, ResolvedFeature, SpellSource};
@@ -52,4 +53,5 @@ pub use sheet::{
     ArmorItem, ArmorKind, CharacterSheet, ClassEntry, DeathSaves, Equipment, HpState, Meta,
     RecordedChoice, WeaponInstance,
 };
+pub use spell::{SpellComponents, SpellDef, SpellSchool};
 pub use value::{Dice, ValueExpr};
