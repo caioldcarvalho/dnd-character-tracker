@@ -6,7 +6,35 @@
 // the document dirty (with optional debounced autosave).
 
 import * as ipc from './ipc';
-import type { Catalog } from '$bindings';
+import type { Catalog, Note } from '$bindings';
+
+// ---- Toast system ----
+
+export type ToastKind = 'info' | 'good' | 'warn';
+
+export interface Toast {
+  id: number;
+  msg: string;
+  kind: ToastKind;
+}
+
+let _toastSeq = 0;
+
+class ToastStore {
+  items = $state<Toast[]>([]);
+
+  push(msg: string, kind: ToastKind = 'info') {
+    const id = ++_toastSeq;
+    this.items = [...this.items, { id, msg, kind }];
+    setTimeout(() => this.dismiss(id), 3500);
+  }
+
+  dismiss(id: number) {
+    this.items = this.items.filter((t) => t.id !== id);
+  }
+}
+
+export const toasts = new ToastStore();
 
 type Sheet = any;
 type Computed = any;
@@ -85,7 +113,7 @@ class AppState {
 
   /** Load a sheet and compute it. */
   async setSheet(sheet: Sheet, path: string | null = null) {
-    this.sheet = sheet;
+    this.sheet = normalizeNotes(sheet);
     this.path = path;
     this.dirty = false;
     await this.recompute();
@@ -98,6 +126,40 @@ class AppState {
       await this.setSheet(sheet, null);
       this.section = 'build';
       this.dirty = true;
+    } catch (e) {
+      this.error = String(e);
+    }
+  }
+
+  /** Delete a character by path; if it's the one currently open, close it. */
+  async deleteCharacter(path: string) {
+    try {
+      await ipc.deleteCharacter(path);
+      if (this.path === path) {
+        await this.closeCharacter();
+      }
+    } catch (e) {
+      this.error = String(e);
+    }
+  }
+
+  /** Save a duplicate of a character (new id + "(copy)" name suffix). */
+  async duplicateCharacter(path: string, newName?: string): Promise<string | null> {
+    try {
+      return await ipc.duplicateCharacter(path, newName);
+    } catch (e) {
+      this.error = String(e);
+      return null;
+    }
+  }
+
+  /** Rename the in-memory sheet (and persist). */
+  async renameCharacter(path: string, newName: string): Promise<void> {
+    try {
+      const sheet = await ipc.loadCharacter(path);
+      const raw = sheet as { meta?: { name?: string } };
+      if (raw?.meta) raw.meta.name = newName;
+      await ipc.saveCharacter(path, sheet);
     } catch (e) {
       this.error = String(e);
     }
@@ -231,9 +293,26 @@ class AppState {
 
   // ---- notes ----
 
-  setNotes(text: string) {
+  addNote(note: Note) {
     return this.#edit((s) => {
-      s.notes = text;
+      s.notes = [...(s.notes ?? []), note];
+    });
+  }
+  updateNote(id: string, updates: Partial<Note>) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).map((n: Note) => (n.id === id ? { ...n, ...updates } : n));
+    });
+  }
+  deleteNote(id: string) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).filter((n: Note) => n.id !== id);
+    });
+  }
+  toggleNotePin(id: string) {
+    return this.#edit((s) => {
+      s.notes = (s.notes ?? []).map((n: Note) =>
+        n.id === id ? { ...n, pinned: !n.pinned } : n
+      );
     });
   }
 
@@ -247,11 +326,27 @@ class AppState {
   removeClass(index: number) {
     return this.#edit((s) => s.classes.splice(index, 1));
   }
-  setClassLevel(index: number, level: number) {
-    return this.#edit((s) => {
+  async setClassLevel(index: number, level: number) {
+    if (!this.sheet) return;
+    const entry = this.sheet.classes[index];
+    if (!entry) return;
+    const oldLevel = entry.level;
+    const newLevel = Math.max(1, Math.min(20, level));
+    const isLevelUp = newLevel > oldLevel;
+    const prevMaxHp = this.computed?.max_hp?.total ?? 0;
+
+    await this.#edit((s) => {
       const c = s.classes[index];
-      if (c) c.level = Math.max(1, Math.min(20, level));
+      if (c) c.level = newLevel;
     });
+
+    if (isLevelUp) {
+      const newMaxHp = this.computed?.max_hp?.total ?? 0;
+      const hpDelta = newMaxHp - prevMaxHp;
+      const className = entry.class.charAt(0).toUpperCase() + entry.class.slice(1);
+      const hpPart = hpDelta > 0 ? ` (+${hpDelta} max HP)` : '';
+      toasts.push(`Level up! ${className} ${newLevel}${hpPart}`, 'good');
+    }
   }
   setSubclass(index: number, subclassId: string | null) {
     return this.#edit((s) => {
@@ -382,13 +477,87 @@ class AppState {
     });
   }
 
+  // ---- play: spells ----
+
+  /** Toggle a spell id in known_spells (Known-caster classes). */
+  toggleKnownSpell(id: string) {
+    return this.#edit((s) => {
+      const arr: string[] = s.known_spells ?? [];
+      const i = arr.indexOf(id);
+      if (i >= 0) arr.splice(i, 1);
+      else arr.push(id);
+      s.known_spells = arr;
+    });
+  }
+
+  /** Toggle a spell id in prepared_spells (Prepared-caster classes). */
+  togglePreparedSpell(id: string) {
+    return this.#edit((s) => {
+      const arr: string[] = s.prepared_spells ?? [];
+      const i = arr.indexOf(id);
+      if (i >= 0) arr.splice(i, 1);
+      else arr.push(id);
+      s.prepared_spells = arr;
+    });
+  }
+
+  /**
+   * Cast a spell:
+   * - Cantrips (level 0): no slot consumed; success toast.
+   * - Leveled spells: find an available slot; warn if none; expend and toast.
+   * - Concentration spells: always update the concentration tracker.
+   */
+  async castSpell(spell: { id: string; name: string; level: number; concentration: boolean }) {
+    if (!this.sheet) return;
+    if (spell.level === 0) {
+      if (spell.concentration) this.setConcentration(spell.name);
+      toasts.push('Cast ' + spell.name, 'good');
+      return;
+    }
+    // Find the lowest available slot at the spell's level.
+    const slots = this.computed?.spell_slots ?? [];
+    const slot = (slots as Array<{ level: number; current: number; max: number }>).find(
+      (sl) => sl.level === spell.level && sl.current > 0
+    );
+    if (!slot) {
+      toasts.push('No level ' + spell.level + ' slot available', 'warn');
+      return;
+    }
+    await this.expendSlot(spell.level);
+    if (spell.concentration) this.setConcentration(spell.name);
+    toasts.push('Cast ' + spell.name + ' (L' + spell.level + ' slot)', 'good');
+  }
+
   // ---- play: hit dice ----
 
-  spendHitDie(sides: number, total: number) {
-    return this.#edit((s) => {
-      const spent = s.hit_dice_spent[sides] ?? 0;
-      if (spent < total) s.hit_dice_spent[sides] = spent + 1;
+  /**
+   * Spend one hit die of the given size, rolling it and adding the CON modifier
+   * to heal HP. Returns { roll, healed, sides } if a die was spent, or null if
+   * already at full HP or no dice remain.
+   *
+   * Rolling is intentionally done here in the frontend (Math.random is fine in
+   * the browser; the Rust engine stays pure/deterministic).
+   */
+  async spendHitDie(sides: number, total: number): Promise<{ roll: number; healed: number; sides: number } | null> {
+    if (!this.sheet) return null;
+    const maxHp = this.maxHp;
+    const spent = this.sheet.hit_dice_spent?.[sides] ?? 0;
+    // Nothing to heal if already at full HP or no dice remain.
+    if ((this.sheet.hp?.current ?? 0) >= maxHp || spent >= total) return null;
+
+    // Roll the die (1..sides) + the EFFECTIVE CON modifier (the engine already
+    // resolves species/feat bonuses into computed.abilities[].modifier).
+    const roll = Math.floor(Math.random() * sides) + 1;
+    const conMod = this.computed?.abilities?.find((a: any) => a.ability === 'con')?.modifier ?? 0;
+    const healed = Math.max(1, roll + conMod);
+
+    await this.#edit((s) => {
+      s.hit_dice_spent[sides] = (s.hit_dice_spent[sides] ?? 0) + 1;
+      s.hp.current = Math.min(maxHp, s.hp.current + healed);
     });
+
+    toasts.push(`Rolled d${sides} → +${healed} HP`, 'good');
+    return { roll, healed, sides };
   }
 
   // ---- play: rests ----
@@ -403,6 +572,11 @@ class AppState {
         this.dirty = true;
         await this.recompute();
         this.#scheduleAutosave();
+        if (kind === 'long') {
+          toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+        } else {
+          toasts.push('Short rest — short-rest resources recharged', 'info');
+        }
       } catch (e) {
         this.error = String(e);
       }
@@ -416,8 +590,34 @@ class AppState {
           s.hp.temp = 0;
           s.exhaustion = Math.max(0, (s.exhaustion ?? 0) - 1);
           s.concentration = null;
+          // Restore floor(total_hit_dice / 2) hit dice (min 1 if any spent).
+          const hitDicePools: Array<{ sides: number; total: number; spent: number }> =
+            this.computed?.hit_dice ?? [];
+          const totalHd = hitDicePools.reduce((sum: number, p: { total: number }) => sum + p.total, 0);
+          if (totalHd > 0) {
+            let regain = Math.max(1, Math.floor(totalHd / 2));
+            // Restore largest dice first (matches Rust engine logic).
+            const sizes = hitDicePools
+              .map((p: { sides: number }) => p.sides)
+              .sort((a: number, b: number) => b - a);
+            for (const size of sizes) {
+              if (regain <= 0) break;
+              const spentNow: number = s.hit_dice_spent[size] ?? 0;
+              if (spentNow <= 0) continue;
+              const give = Math.min(spentNow, regain);
+              const newSpent = spentNow - give;
+              if (newSpent === 0) delete s.hit_dice_spent[size];
+              else s.hit_dice_spent[size] = newSpent;
+              regain -= give;
+            }
+          }
         }
       });
+      if (kind === 'long') {
+        toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+      } else {
+        toasts.push('Short rest — short-rest resources recharged', 'info');
+      }
     }
   }
 
@@ -542,11 +742,46 @@ function blankSheet(name: string): Sheet {
     active_effects: [],
     equipment: { armor: null, shield: false },
     weapons: [],
+    known_spells: [],
+    prepared_spells: [],
     concentration: null,
     death_saves: { successes: 0, failures: 0 },
     inspiration: false,
-    notes: ''
+    notes: []
   };
+}
+
+/** Short unique id for client-created notes. */
+export function noteId(): string {
+  return Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+}
+
+/**
+ * Coerce a sheet's `notes` into the structured `Note[]` shape. Sheets loaded
+ * straight from localStorage (or the bundled sample) predate the card system and
+ * may carry the legacy free-form string, or omit notes entirely.
+ */
+function normalizeNotes(sheet: Sheet): Sheet {
+  if (!sheet) return sheet;
+  const n = sheet.notes;
+  if (Array.isArray(n)) return sheet;
+  if (typeof n === 'string' && n.trim()) {
+    const now = new Date().toISOString();
+    sheet.notes = [
+      {
+        id: noteId(),
+        title: 'Notes',
+        content: n,
+        category: 'general',
+        pinned: false,
+        created_at: now,
+        updated_at: now
+      }
+    ];
+  } else {
+    sheet.notes = [];
+  }
+  return sheet;
 }
 
 export const app = new AppState();

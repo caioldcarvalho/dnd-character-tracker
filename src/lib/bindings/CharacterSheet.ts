@@ -5,6 +5,7 @@ import type { DeathSaves } from "./DeathSaves";
 import type { Equipment } from "./Equipment";
 import type { HpState } from "./HpState";
 import type { Meta } from "./Meta";
+import type { Note } from "./Note";
 import type { RecordedChoice } from "./RecordedChoice";
 import type { ResourceId } from "./ResourceId";
 import type { WeaponInstance } from "./WeaponInstance";
@@ -31,10 +32,19 @@ hit_dice_spent: { [key in number]: number }, conditions: Array<string>, exhausti
  */
 active_effects: Array<string>, equipment: Equipment, weapons: Array<WeaponInstance>, 
 /**
+ * Spell ids the character knows (for Known-caster classes like Sorcerer/Bard).
+ */
+known_spells: Array<string>, 
+/**
+ * Spell ids the character has prepared (for Prepared-caster classes like Cleric/Wizard).
+ */
+prepared_spells: Array<string>, 
+/**
  * The spell currently being concentrated on, if any.
  */
 concentration?: string | null, death_saves: DeathSaves, inspiration: boolean, 
 /**
- * Free-form player notes (markdown/plain text).
+ * Structured player notes: categorized, pinnable cards. Accepts the legacy
+ * free-form `String` shape on load (migrated into one General note).
  */
-notes: string, };
+notes: Array<Note>, };

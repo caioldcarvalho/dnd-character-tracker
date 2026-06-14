@@ -23,6 +23,7 @@ use rpgman_engine::feature::{Feature, NamedOption};
 use rpgman_engine::ids::StatId;
 use rpgman_engine::resource::ResourceDef;
 use rpgman_engine::sheet::CharacterSheet;
+use rpgman_engine::spell::SpellDef;
 use rpgman_engine::value::ValueExpr;
 use ts_rs::{Config, TS};
 
@@ -74,6 +75,7 @@ fn export_typescript_bindings() {
         ResourceDef,
         PendingChoice,
         ResolvedFeature,
+        SpellDef,
     );
 
     write_barrel(&out);

@@ -3,6 +3,7 @@
 
 use crate::content::{ContentDb, Progression};
 use crate::ids::Ability;
+use crate::spell::SpellDef;
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
@@ -58,6 +59,8 @@ pub struct Catalog {
     pub species: Vec<SpeciesSummary>,
     pub backgrounds: Vec<BackgroundSummary>,
     pub feats: Vec<FeatSummary>,
+    /// Full spell definitions (the set is small; the UI needs descriptions/range/etc.).
+    pub spells: Vec<SpellDef>,
 }
 
 fn progression_label(p: Progression) -> Option<String> {
@@ -121,12 +124,14 @@ impl Catalog {
                 category: f.category.clone(),
             })
             .collect();
+        let spells = db.spells.values().cloned().collect();
         Catalog {
             classes,
             subclasses,
             species,
             backgrounds,
             feats,
+            spells,
         }
     }
 }

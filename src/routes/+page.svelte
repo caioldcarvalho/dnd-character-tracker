@@ -19,7 +19,6 @@
   import SpellsView from '$lib/components/sections/SpellsView.svelte';
   import NotesView from '$lib/components/sections/NotesView.svelte';
   import { app, inTauri } from '$lib/state.svelte';
-  import { SAMPLE_SHEET } from '$lib/sample';
   import * as ipc from '$lib/ipc';
   import { onMount } from 'svelte';
 
@@ -28,15 +27,12 @@
   onMount(async () => {
     // Preload the content catalog for build pickers.
     app.ensureCatalog();
-    // In the browser (no Tauri), seed the cockpit with the bundled sample — but
-    // only on a first visit. If the visitor already saved characters (localStorage),
-    // leave the sheet empty so the library lists them instead of clobbering work.
+    // Do NOT auto-load the sample. First-run users see the welcome screen (OpenMenu)
+    // with explicit CTAs so they choose what to do.
     if (!inTauri()) {
       try {
-        const saved = await ipc.listCharacters();
-        if (saved.length === 0) {
-          await app.setSheet(structuredClone(SAMPLE_SHEET));
-        }
+        // Validate localStorage is accessible (catches private-mode Safari etc.).
+        await ipc.listCharacters();
       } catch (e) {
         loadError = String(e);
       }

@@ -1,7 +1,7 @@
 //! Validate every content file individually, reporting EACH failure (not just the
 //! first). Run: cargo run -p rpgman-engine --example validate
 
-use rpgman_engine::*;
+use rpgman_engine::{BackgroundDef, ClassDef, Feature, SpeciesDef, SpellDef, SubclassDef};
 use std::path::{Path, PathBuf};
 
 fn files(dir: &Path) -> Vec<PathBuf> {
@@ -45,7 +45,7 @@ fn check<T: for<'de> serde::Deserialize<'de>>(label: &str, dir: &Path) -> (usize
 fn main() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../content");
     let mut total_bad = 0;
-    for label in ["classes", "subclasses", "species", "backgrounds", "feats"] {
+    for label in ["classes", "subclasses", "species", "backgrounds", "feats", "spells"] {
         let dir = root.join(label);
         println!("== {label} ==");
         let (_ok, bad) = match label {
@@ -54,6 +54,7 @@ fn main() {
             "species" => check::<SpeciesDef>(label, &dir),
             "backgrounds" => check::<BackgroundDef>(label, &dir),
             "feats" => check::<Feature>(label, &dir),
+            "spells" => check::<SpellDef>(label, &dir),
             _ => (0, 0),
         };
         total_bad += bad;

@@ -3,9 +3,14 @@ import type { BackgroundSummary } from "./BackgroundSummary";
 import type { ClassSummary } from "./ClassSummary";
 import type { FeatSummary } from "./FeatSummary";
 import type { SpeciesSummary } from "./SpeciesSummary";
+import type { SpellDef } from "./SpellDef";
 import type { SubclassSummary } from "./SubclassSummary";
 
 /**
  * Everything the build pickers need, in one payload.
  */
-export type Catalog = { classes: Array<ClassSummary>, subclasses: Array<SubclassSummary>, species: Array<SpeciesSummary>, backgrounds: Array<BackgroundSummary>, feats: Array<FeatSummary>, };
+export type Catalog = { classes: Array<ClassSummary>, subclasses: Array<SubclassSummary>, species: Array<SpeciesSummary>, backgrounds: Array<BackgroundSummary>, feats: Array<FeatSummary>, 
+/**
+ * Full spell definitions (the set is small; the UI needs descriptions/range/etc.).
+ */
+spells: Array<SpellDef>, };
