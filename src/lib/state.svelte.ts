@@ -435,11 +435,35 @@ class AppState {
 
   // ---- play: hit dice ----
 
-  spendHitDie(sides: number, total: number) {
+  /**
+   * Spend one hit die of the given size, rolling it and adding the CON modifier
+   * to heal HP. Returns { healed, roll, sides } if a die was spent, or null if
+   * already at full HP or no dice remain.
+   *
+   * Rolling is intentionally done here in the frontend (Math.random is fine in
+   * the browser; the Rust engine stays pure/deterministic). The result is
+   * returned so a future feedback layer can surface "Rolled 6 + 2 CON = 8 HP".
+   */
+  spendHitDie(sides: number, total: number): Promise<{ healed: number; roll: number; sides: number } | null> {
+    const maxHp = this.maxHp;
+    const currentHp = this.sheet?.hp?.current ?? 0;
+    // Nothing to heal if already at full HP or no dice available.
+    const spent = this.sheet?.hit_dice_spent?.[sides] ?? 0;
+    if (currentHp >= maxHp || spent >= total) return Promise.resolve(null);
+
+    // Roll the die (1..sides) and add CON modifier.
+    const roll = Math.floor(Math.random() * sides) + 1;
+    const conScore: number = this.computed?.abilities?.find((a: any) => a.id === 'con')?.effective ?? 10;
+    const conMod = Math.floor((conScore - 10) / 2);
+    const healAmount = Math.max(1, roll + conMod);
+
     return this.#edit((s) => {
-      const spent = s.hit_dice_spent[sides] ?? 0;
-      if (spent < total) s.hit_dice_spent[sides] = spent + 1;
-    });
+      // Mark one die as spent.
+      const alreadySpent = s.hit_dice_spent[sides] ?? 0;
+      s.hit_dice_spent[sides] = alreadySpent + 1;
+      // Heal HP, clamped to max.
+      s.hp.current = Math.min(maxHp, s.hp.current + healAmount);
+    }).then(() => ({ healed: healAmount, roll, sides }));
   }
 
   // ---- play: rests ----
@@ -467,6 +491,27 @@ class AppState {
           s.hp.temp = 0;
           s.exhaustion = Math.max(0, (s.exhaustion ?? 0) - 1);
           s.concentration = null;
+          // Restore floor(total_hit_dice / 2) hit dice (min 1 if any spent).
+          const hitDicePools: Array<{ sides: number; total: number; spent: number }> =
+            this.computed?.hit_dice ?? [];
+          const totalHd = hitDicePools.reduce((sum: number, p: { total: number }) => sum + p.total, 0);
+          if (totalHd > 0) {
+            let regain = Math.max(1, Math.floor(totalHd / 2));
+            // Restore largest dice first (matches Rust engine logic).
+            const sizes = hitDicePools
+              .map((p: { sides: number }) => p.sides)
+              .sort((a: number, b: number) => b - a);
+            for (const size of sizes) {
+              if (regain <= 0) break;
+              const spentNow: number = s.hit_dice_spent[size] ?? 0;
+              if (spentNow <= 0) continue;
+              const give = Math.min(spentNow, regain);
+              const newSpent = spentNow - give;
+              if (newSpent === 0) delete s.hit_dice_spent[size];
+              else s.hit_dice_spent[size] = newSpent;
+              regain -= give;
+            }
+          }
         }
       });
     }
