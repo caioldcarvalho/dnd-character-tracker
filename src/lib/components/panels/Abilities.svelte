@@ -16,12 +16,14 @@
   <div class="grid grid-cols-6 gap-1">
     {#each abilities as a}
       {@const save = saveFor(a.ability)}
-      <div class="flex flex-col items-center gap-1 rounded bg-[var(--color-panel-2)] py-1.5">
+      <div class="flex flex-col items-center gap-0.5 rounded bg-[var(--color-panel-2)] py-1.5 px-0.5">
         <span class="text-[9px] uppercase tracking-wide text-[var(--color-muted)]"
           >{ABILITY_LABEL[a.ability as AbilityKey]}</span
         >
-        <Stat value={signed(a.modifier)} stat={{ kind: 'ability-modifier', of: a.ability }} big />
-        <Stat label="score" value={a.score} stat={{ kind: 'ability-score', of: a.ability }} />
+        <!-- Big number = effective score (consistent with build view) -->
+        <Stat value={a.score} stat={{ kind: 'ability-score', of: a.ability }} big />
+        <!-- Modifier shown below, smaller -->
+        <Stat label="mod" value={signed(a.modifier)} stat={{ kind: 'ability-modifier', of: a.ability }} />
         {#if save}
           <div class="flex items-center gap-0.5 mt-0.5">
             <span
