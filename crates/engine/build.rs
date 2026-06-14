@@ -12,7 +12,7 @@ fn main() {
     let manifest = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let content_root = manifest.join("../../content");
 
-    let kinds = ["classes", "subclasses", "species", "backgrounds", "feats"];
+    let kinds = ["classes", "subclasses", "species", "backgrounds", "feats", "spells"];
     let mut entries = String::new();
 
     for kind in kinds {

@@ -5,6 +5,7 @@
 use crate::error::EngineError;
 use crate::feature::{ChoicePoint, Feature};
 use crate::ids::{Ability, ClassId};
+use crate::spell::SpellDef;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -134,6 +135,8 @@ pub struct ContentDb {
     pub backgrounds: BTreeMap<String, BackgroundDef>,
     #[serde(default)]
     pub feats: BTreeMap<String, Feature>,
+    #[serde(default)]
+    pub spells: BTreeMap<String, SpellDef>,
 }
 
 impl ContentDb {
@@ -157,6 +160,10 @@ impl ContentDb {
         self.feats.insert(f.id.clone(), f);
         self
     }
+    pub fn with_spell(mut self, s: SpellDef) -> Self {
+        self.spells.insert(s.id.clone(), s);
+        self
+    }
 
     pub fn class(&self, id: &ClassId) -> Option<&ClassDef> {
         self.classes.get(&id.0)
@@ -172,6 +179,9 @@ impl ContentDb {
     }
     pub fn feat(&self, id: &str) -> Option<&Feature> {
         self.feats.get(id)
+    }
+    pub fn spell(&self, id: &str) -> Option<&SpellDef> {
+        self.spells.get(id)
     }
 
     /// Build the database from content embedded into the binary at compile time
@@ -195,6 +205,9 @@ impl ContentDb {
                 }),
                 "feats" => insert_all(parse_text::<Feature>(text, kind)?, |f| {
                     db.feats.insert(f.id.clone(), f);
+                }),
+                "spells" => insert_all(parse_text::<SpellDef>(text, kind)?, |s| {
+                    db.spells.insert(s.id.clone(), s);
                 }),
                 _ => {}
             }
@@ -220,6 +233,9 @@ impl ContentDb {
         }
         for ft in read_jsons::<Feature>(&root.join("feats"))? {
             db.feats.insert(ft.id.clone(), ft);
+        }
+        for sp in read_jsons::<SpellDef>(&root.join("spells"))? {
+            db.spells.insert(sp.id.clone(), sp);
         }
         Ok(db)
     }

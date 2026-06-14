@@ -155,6 +155,12 @@ pub struct CharacterSheet {
     pub equipment: Equipment,
     #[serde(default)]
     pub weapons: Vec<WeaponInstance>,
+    /// Spell ids the character knows (for Known-caster classes like Sorcerer/Bard).
+    #[serde(default)]
+    pub known_spells: Vec<String>,
+    /// Spell ids the character has prepared (for Prepared-caster classes like Cleric/Wizard).
+    #[serde(default)]
+    pub prepared_spells: Vec<String>,
     /// The spell currently being concentrated on, if any.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub concentration: Option<String>,
@@ -191,6 +197,8 @@ impl CharacterSheet {
             active_effects: Vec::new(),
             equipment: Equipment::default(),
             weapons: Vec::new(),
+            known_spells: Vec::new(),
+            prepared_spells: Vec::new(),
             concentration: None,
             death_saves: DeathSaves::default(),
             inspiration: false,
