@@ -77,21 +77,92 @@ export async function newSheet(name: string): Promise<CharacterSheet> {
 
 const LS_PREFIX = 'rpgman:char:';
 
-export async function listCharacters(): Promise<{ name: string; path: string }[]> {
-  if (inTauri()) return invoke('list_characters');
-  const out: { name: string; path: string }[] = [];
+/** Summary info shown in library cards. Optional so Tauri path (name-only) still compiles. */
+export interface CharacterSummary {
+  name: string;
+  path: string;
+  species?: string;
+  classLabel?: string;
+  level?: number;
+  hp?: { current: number; max: number };
+}
+
+export async function listCharacters(): Promise<CharacterSummary[]> {
+  if (inTauri()) {
+    // Tauri returns { name, path } — summaries are name-only there.
+    const raw: { name: string; path: string }[] = await invoke('list_characters');
+    return raw;
+  }
+  const out: CharacterSummary[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (!key || !key.startsWith(LS_PREFIX)) continue;
     try {
       const sheet = JSON.parse(localStorage.getItem(key) ?? '');
-      out.push({ name: sheet?.meta?.name || key.slice(LS_PREFIX.length), path: key });
+      const name: string = sheet?.meta?.name || key.slice(LS_PREFIX.length);
+      // Build a human-readable class label ("Fighter 11 (Battle Master)")
+      let classLabel: string | undefined;
+      let level: number | undefined;
+      if (Array.isArray(sheet?.classes) && sheet.classes.length > 0) {
+        const cls = sheet.classes[0];
+        const className = cls.class
+          ? cls.class.charAt(0).toUpperCase() + cls.class.slice(1)
+          : '';
+        const subLabel = cls.subclass
+          ? ` (${cls.subclass.charAt(0).toUpperCase() + cls.subclass.slice(1).replace(/-/g, ' ')})`
+          : '';
+        level = sheet.classes.reduce(
+          (acc: number, c: { level?: number }) => acc + (c.level ?? 0),
+          0
+        );
+        classLabel = `${className}${subLabel}`;
+      }
+      const speciesRaw: string | undefined = sheet?.species;
+      const species = speciesRaw
+        ? speciesRaw.charAt(0).toUpperCase() + speciesRaw.slice(1)
+        : undefined;
+      // HP: current is stored; max requires the engine — we store a best-effort
+      // snapshot in the sheet if available, else just show current.
+      const hpCurrent: number = sheet?.hp?.current ?? 0;
+      const hp = { current: hpCurrent, max: hpCurrent };
+      out.push({ name, path: key, species, classLabel, level, hp });
     } catch {
       /* skip a corrupt entry */
     }
   }
   out.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
   return out;
+}
+
+/** Delete a character from localStorage (browser) or disk (Tauri, not yet wired). */
+export async function deleteCharacter(path: string): Promise<void> {
+  if (inTauri()) {
+    // Tauri doesn't have a delete command yet — guard gracefully.
+    try {
+      await invoke('delete_character', { path });
+    } catch {
+      /* ignore: command may not exist in Tauri build */
+    }
+    return;
+  }
+  localStorage.removeItem(path);
+}
+
+/** Save a character under a new key (a copy). Returns the new path. */
+export async function duplicateCharacter(
+  sourcePath: string,
+  overrideName?: string
+): Promise<string> {
+  const sheet = await loadCharacter(sourcePath);
+  const rawSheet = sheet as { meta?: { name?: string; id?: string } };
+  const baseName = overrideName ?? `${rawSheet?.meta?.name ?? 'Character'} (copy)`;
+  // Give the copy a new id to avoid key collisions.
+  const newId = `copy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const newSheet = {
+    ...rawSheet,
+    meta: { ...rawSheet.meta, name: baseName, id: newId }
+  };
+  return saveCharacter(null, newSheet as CharacterSheet);
 }
 
 export async function loadCharacter(path: string): Promise<CharacterSheet> {

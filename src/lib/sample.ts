@@ -40,5 +40,7 @@ export const SAMPLE_SHEET = {
   ],
   concentration: null,
   death_saves: { successes: 0, failures: 0 },
-  inspiration: false
+  inspiration: false,
+  slots_expended: {},
+  notes: ''
 };

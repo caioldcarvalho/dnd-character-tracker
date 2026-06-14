@@ -103,6 +103,40 @@ class AppState {
     }
   }
 
+  /** Delete a character by path; if it's the one currently open, close it. */
+  async deleteCharacter(path: string) {
+    try {
+      await ipc.deleteCharacter(path);
+      if (this.path === path) {
+        await this.closeCharacter();
+      }
+    } catch (e) {
+      this.error = String(e);
+    }
+  }
+
+  /** Save a duplicate of a character (new id + "(copy)" name suffix). */
+  async duplicateCharacter(path: string, newName?: string): Promise<string | null> {
+    try {
+      return await ipc.duplicateCharacter(path, newName);
+    } catch (e) {
+      this.error = String(e);
+      return null;
+    }
+  }
+
+  /** Rename the in-memory sheet (and persist). */
+  async renameCharacter(path: string, newName: string): Promise<void> {
+    try {
+      const sheet = await ipc.loadCharacter(path);
+      const raw = sheet as { meta?: { name?: string } };
+      if (raw?.meta) raw.meta.name = newName;
+      await ipc.saveCharacter(path, sheet);
+    } catch (e) {
+      this.error = String(e);
+    }
+  }
+
   /** Close the current character and return to the library/open menu. */
   async closeCharacter(opts: { saveFirst?: boolean } = {}) {
     if (opts.saveFirst && this.dirty) {
