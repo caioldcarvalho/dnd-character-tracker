@@ -8,6 +8,34 @@
 import * as ipc from './ipc';
 import type { Catalog } from '$bindings';
 
+// ---- Toast system ----
+
+export type ToastKind = 'info' | 'good' | 'warn';
+
+export interface Toast {
+  id: number;
+  msg: string;
+  kind: ToastKind;
+}
+
+let _toastSeq = 0;
+
+class ToastStore {
+  items = $state<Toast[]>([]);
+
+  push(msg: string, kind: ToastKind = 'info') {
+    const id = ++_toastSeq;
+    this.items = [...this.items, { id, msg, kind }];
+    setTimeout(() => this.dismiss(id), 3500);
+  }
+
+  dismiss(id: number) {
+    this.items = this.items.filter((t) => t.id !== id);
+  }
+}
+
+export const toasts = new ToastStore();
+
 type Sheet = any;
 type Computed = any;
 type Breakdown = any;
@@ -247,11 +275,27 @@ class AppState {
   removeClass(index: number) {
     return this.#edit((s) => s.classes.splice(index, 1));
   }
-  setClassLevel(index: number, level: number) {
-    return this.#edit((s) => {
+  async setClassLevel(index: number, level: number) {
+    if (!this.sheet) return;
+    const entry = this.sheet.classes[index];
+    if (!entry) return;
+    const oldLevel = entry.level;
+    const newLevel = Math.max(1, Math.min(20, level));
+    const isLevelUp = newLevel > oldLevel;
+    const prevMaxHp = this.computed?.max_hp?.total ?? 0;
+
+    await this.#edit((s) => {
       const c = s.classes[index];
-      if (c) c.level = Math.max(1, Math.min(20, level));
+      if (c) c.level = newLevel;
     });
+
+    if (isLevelUp) {
+      const newMaxHp = this.computed?.max_hp?.total ?? 0;
+      const hpDelta = newMaxHp - prevMaxHp;
+      const className = entry.class.charAt(0).toUpperCase() + entry.class.slice(1);
+      const hpPart = hpDelta > 0 ? ` (+${hpDelta} max HP)` : '';
+      toasts.push(`Level up! ${className} ${newLevel}${hpPart}`, 'good');
+    }
   }
   setSubclass(index: number, subclassId: string | null) {
     return this.#edit((s) => {
@@ -384,11 +428,23 @@ class AppState {
 
   // ---- play: hit dice ----
 
-  spendHitDie(sides: number, total: number) {
-    return this.#edit((s) => {
-      const spent = s.hit_dice_spent[sides] ?? 0;
-      if (spent < total) s.hit_dice_spent[sides] = spent + 1;
+  async spendHitDie(sides: number, total: number): Promise<{ roll: number; healed: number; sides: number } | null> {
+    if (!this.sheet) return null;
+    const spent = this.sheet.hit_dice_spent[sides] ?? 0;
+    if (spent >= total) return null;
+
+    // Roll the die + CON modifier before mutating, so we can report it.
+    const roll = Math.floor(Math.random() * sides) + 1;
+    const conMod = Math.floor(((this.sheet.abilities?.con ?? 10) - 10) / 2);
+    const healed = Math.max(1, roll + conMod);
+
+    await this.#edit((s) => {
+      s.hit_dice_spent[sides] = (s.hit_dice_spent[sides] ?? 0) + 1;
+      s.hp.current = Math.min(this.maxHp, s.hp.current + healed);
     });
+
+    toasts.push(`Rolled d${sides} → +${healed} HP`, 'good');
+    return { roll, healed, sides };
   }
 
   // ---- play: rests ----
@@ -403,6 +459,11 @@ class AppState {
         this.dirty = true;
         await this.recompute();
         this.#scheduleAutosave();
+        if (kind === 'long') {
+          toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+        } else {
+          toasts.push('Short rest — short-rest resources recharged', 'info');
+        }
       } catch (e) {
         this.error = String(e);
       }
@@ -418,6 +479,11 @@ class AppState {
           s.concentration = null;
         }
       });
+      if (kind === 'long') {
+        toasts.push('Long rest — full HP, all slots & half hit dice restored, −1 exhaustion', 'good');
+      } else {
+        toasts.push('Short rest — short-rest resources recharged', 'info');
+      }
     }
   }
 
