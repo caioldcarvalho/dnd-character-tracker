@@ -83,6 +83,57 @@ fn long_rest_restores_slots_hp_and_exhaustion() {
 }
 
 #[test]
+fn long_rest_restores_half_hit_dice() {
+    let db = content();
+    // Fighter 4 → 4 d10 hit dice. floor(4/2) = 2 should be regained.
+    let mut sheet = CharacterSheet::new("Bors")
+        .with_class("fighter", 4, None)
+        .with_ability(Ability::Con, 14);
+    // Spend all 4 hit dice.
+    sheet.hit_dice_spent.insert(10, 4);
+
+    let after = rest(&sheet, &db, RestKind::Long);
+
+    // floor(4/2) = 2 regained → 4 - 2 = 2 still spent.
+    assert_eq!(
+        after.hit_dice_spent.get(&10).copied().unwrap_or(0),
+        2,
+        "long rest should restore floor(total/2) = 2 hit dice on a Fighter 4"
+    );
+
+    // Edge case: only 1 spent → regain min 1 → 0 spent.
+    let mut sheet2 = CharacterSheet::new("Bors2")
+        .with_class("fighter", 4, None)
+        .with_ability(Ability::Con, 14);
+    sheet2.hit_dice_spent.insert(10, 1);
+    let after2 = rest(&sheet2, &db, RestKind::Long);
+    assert_eq!(
+        after2.hit_dice_spent.get(&10).copied().unwrap_or(0),
+        0,
+        "min-1 regain: 1 spent should be fully restored on long rest"
+    );
+
+    // A level 11 multiclass character: 6 Fighter d10 + 5 Rogue d8 = 11 total.
+    // floor(11/2) = 5 should be regained (largest dice first).
+    let mut sheet3 = CharacterSheet::new("Multi")
+        .with_class("fighter", 6, None)
+        .with_class("rogue", 5, Some("thief"))
+        .with_ability(Ability::Con, 12);
+    sheet3.hit_dice_spent.insert(10, 6); // all fighter d10 spent
+    sheet3.hit_dice_spent.insert(8, 5); // all rogue d8 spent
+    let after3 = rest(&sheet3, &db, RestKind::Long);
+    let d10_spent = after3.hit_dice_spent.get(&10).copied().unwrap_or(0);
+    let d8_spent = after3.hit_dice_spent.get(&8).copied().unwrap_or(0);
+    assert_eq!(
+        d10_spent + d8_spent,
+        6,
+        "11 total HD → floor(11/2)=5 regained → 6 still spent (largest first)"
+    );
+    assert_eq!(d10_spent, 1, "5 d10 restored first (largest die), 1 d10 still spent");
+    assert_eq!(d8_spent, 5, "d8 untouched because regain was satisfied by d10 alone");
+}
+
+#[test]
 fn spell_slot_expenditure_is_tracked() {
     let db = content();
     let mut wiz = CharacterSheet::new("Mira")
