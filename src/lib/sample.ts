@@ -42,5 +42,5 @@ export const SAMPLE_SHEET = {
   death_saves: { successes: 0, failures: 0 },
   inspiration: false,
   slots_expended: {},
-  notes: ''
+  notes: []
 };

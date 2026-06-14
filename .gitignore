@@ -42,3 +42,4 @@ COGITLOG
 
 # Local dev scratch (chrome-devtools web-check screenshots, etc.)
 /.dev/
+/src/lib/wasm
