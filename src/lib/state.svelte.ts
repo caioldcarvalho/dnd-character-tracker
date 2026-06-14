@@ -477,6 +477,57 @@ class AppState {
     });
   }
 
+  // ---- play: spells ----
+
+  /** Toggle a spell id in known_spells (Known-caster classes). */
+  toggleKnownSpell(id: string) {
+    return this.#edit((s) => {
+      const arr: string[] = s.known_spells ?? [];
+      const i = arr.indexOf(id);
+      if (i >= 0) arr.splice(i, 1);
+      else arr.push(id);
+      s.known_spells = arr;
+    });
+  }
+
+  /** Toggle a spell id in prepared_spells (Prepared-caster classes). */
+  togglePreparedSpell(id: string) {
+    return this.#edit((s) => {
+      const arr: string[] = s.prepared_spells ?? [];
+      const i = arr.indexOf(id);
+      if (i >= 0) arr.splice(i, 1);
+      else arr.push(id);
+      s.prepared_spells = arr;
+    });
+  }
+
+  /**
+   * Cast a spell:
+   * - Cantrips (level 0): no slot consumed; success toast.
+   * - Leveled spells: find an available slot; warn if none; expend and toast.
+   * - Concentration spells: always update the concentration tracker.
+   */
+  async castSpell(spell: { id: string; name: string; level: number; concentration: boolean }) {
+    if (!this.sheet) return;
+    if (spell.level === 0) {
+      if (spell.concentration) this.setConcentration(spell.name);
+      toasts.push('Cast ' + spell.name, 'good');
+      return;
+    }
+    // Find the lowest available slot at the spell's level.
+    const slots = this.computed?.spell_slots ?? [];
+    const slot = (slots as Array<{ level: number; current: number; max: number }>).find(
+      (sl) => sl.level === spell.level && sl.current > 0
+    );
+    if (!slot) {
+      toasts.push('No level ' + spell.level + ' slot available', 'warn');
+      return;
+    }
+    await this.expendSlot(spell.level);
+    if (spell.concentration) this.setConcentration(spell.name);
+    toasts.push('Cast ' + spell.name + ' (L' + spell.level + ' slot)', 'good');
+  }
+
   // ---- play: hit dice ----
 
   /**
@@ -691,6 +742,8 @@ function blankSheet(name: string): Sheet {
     active_effects: [],
     equipment: { armor: null, shield: false },
     weapons: [],
+    known_spells: [],
+    prepared_spells: [],
     concentration: null,
     death_saves: { successes: 0, failures: 0 },
     inspiration: false,
