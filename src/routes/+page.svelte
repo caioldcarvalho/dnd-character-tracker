@@ -111,10 +111,8 @@
       {/if}
     </main>
 
-    <!-- Inspector only where stat breakdowns are relevant; on Notes/Spells it
-         would just show a stale, unrelated breakdown and waste the width. -->
-    {#if app.sheet && (app.section === 'sheet' || app.section === 'build' || app.section === 'gear')}
-      <Inspector />
-    {/if}
+    <!-- Inspector renders itself only when something is selected (app.inspecting != null).
+         It's a fixed overlay so it never takes layout space from the cockpit. -->
+    <Inspector />
   </div>
 </div>
