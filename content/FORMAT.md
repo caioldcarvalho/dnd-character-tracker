@@ -239,6 +239,27 @@ Use the same kebab-case ids as in `content/classes/`: `barbarian`, `bard`,
 `cleric`, `druid`, `fighter`, `monk`, `paladin`, `ranger`, `rogue`,
 `sorcerer`, `warlock`, `wizard`.
 
+### Optional combat fields
+
+Three optional fields describe how a spell interacts in combat. Omit any that
+do not apply.
+
+```json
+"attack": "ranged",          // or "melee" — the caster makes a spell attack roll
+"save": {
+  "ability": "dex",          // ability the TARGET saves with (str/dex/con/int/wis/cha)
+  "effect": "half damage on a success"   // what happens when the target succeeds
+},
+"damage": {
+  "dice": "3d6",             // dice expression; free-form string
+  "damage_type": "fire"      // e.g. fire, cold, radiant, necrotic, healing, varies …
+}
+```
+
+Rules: `attack` and `save` are mutually exclusive (a spell either attacks or
+forces a save). `damage` can appear alone (e.g. auto-hit spells like Magic
+Missile, or healing spells). Omit all three for utility/control spells.
+
 ### Notes for bulk authoring
 
 - `components.material` should be omitted (not set to `null`) when the spell

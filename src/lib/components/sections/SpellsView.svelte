@@ -79,6 +79,30 @@
       : []
   );
 
+  // ---- combat line helpers ----
+
+  const ABILITY_ABBR: Record<string, string> = {
+    str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA'
+  };
+
+  /** Build a compact combat summary string for a spell, e.g. "spell atk +5 • 1d10 fire" */
+  function combatLine(sp: SpellDef): string | null {
+    const sc = sources[0];
+    if (!sc) return null;
+    const parts: string[] = [];
+    if (sp.attack != null) {
+      const bonus = sc.attack_bonus != null ? signed(sc.attack_bonus) : '?';
+      parts.push(`spell atk ${bonus}`);
+    } else if (sp.save != null) {
+      const abilAbbr = ABILITY_ABBR[sp.save.ability] ?? sp.save.ability.toUpperCase();
+      parts.push(`${abilAbbr} save DC ${sc.save_dc ?? '?'}`);
+    }
+    if (sp.damage != null) {
+      parts.push(`${sp.damage.dice} ${sp.damage.damage_type}`);
+    }
+    return parts.length > 0 ? parts.join(' • ') : null;
+  }
+
   // ---- school abbreviations ----
   const SCHOOL_ABBR: Record<string, string> = {
     abjuration: 'Abj',
@@ -217,12 +241,15 @@
                   <span class="text-[9px] text-[var(--color-muted)] block">
                     {sp.casting_time} · {sp.range}{sp.concentration ? ' · Conc' : ''}{sp.ritual ? ' · Ritual' : ''}
                   </span>
+                  {#if combatLine(sp)}
+                    <span class="text-[9px] text-[var(--color-accent)] block num">{combatLine(sp)}</span>
+                  {/if}
                 </span>
 
                 <!-- Cast button (primary) -->
                 <button
                   type="button"
-                  onclick={() => app.castSpell({ id: sp.id, name: sp.name, level: sp.level, concentration: sp.concentration })}
+                  onclick={() => app.castSpell({ id: sp.id, name: sp.name, level: sp.level, concentration: sp.concentration, attack: sp.attack, save: sp.save, damage: sp.damage })}
                   class="shrink-0 rounded bg-[var(--color-accent)] px-3 py-1.5 text-[11px] font-semibold text-[var(--color-bg)] hover:opacity-90"
                 >Cast</button>
               </div>

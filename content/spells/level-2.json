@@ -72,7 +72,8 @@
     "range": "30 feet",
     "components": { "verbal": true },
     "duration": "1 minute",
-    "description": "You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is blinded or deafened (your choice) for the duration. At the end of each of its turns, the target can make a Constitution saving throw; a successful save ends the effect."
+    "description": "You can blind or deafen a foe. Choose one creature that you can see within range to make a Constitution saving throw. If it fails, the target is blinded or deafened (your choice) for the duration. At the end of each of its turns, the target can make a Constitution saving throw; a successful save ends the effect.",
+    "save": { "ability": "con", "effect": "no effect on a success" }
   },
   {
     "id": "blur",
@@ -111,7 +112,8 @@
     "components": { "verbal": true, "somatic": true },
     "duration": "1 minute",
     "concentration": true,
-    "description": "One humanoid of your choice that you can see within range must succeed on a Wisdom saving throw or become charmed by you for the duration. While charmed, a twisted crown of jagged iron appears on its head, and it must use its action to make a melee attack against another creature of your choice. On each of your turns, you must use your action to maintain control; otherwise the spell ends."
+    "description": "One humanoid of your choice that you can see within range must succeed on a Wisdom saving throw or become charmed by you for the duration. While charmed, a twisted crown of jagged iron appears on its head, and it must use its action to make a melee attack against another creature of your choice. On each of your turns, you must use your action to maintain control; otherwise the spell ends.",
+    "save": { "ability": "wis", "effect": "no effect on a success" }
   },
   {
     "id": "darkness",
@@ -200,7 +202,9 @@
     "components": { "verbal": true, "somatic": true, "material": "a bit of tallow, a pinch of brimstone, and a dusting of powdered iron" },
     "duration": "1 minute",
     "concentration": true,
-    "description": "A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw, taking 2d6 fire damage on a failed save or half as much on a successful one."
+    "description": "A 5-foot-diameter sphere of fire appears in an unoccupied space of your choice within range and lasts for the duration. Any creature that ends its turn within 5 feet of the sphere must make a Dexterity saving throw, taking 2d6 fire damage on a failed save or half as much on a successful one.",
+    "save": { "ability": "dex", "effect": "half damage on a success" },
+    "damage": { "dice": "2d6", "damage_type": "fire" }
   },
   {
     "id": "gentle-repose",
@@ -252,7 +256,8 @@
     "components": { "verbal": true, "somatic": true, "material": "a small, straight piece of iron" },
     "duration": "1 minute",
     "concentration": true,
-    "description": "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw; on a success, the spell ends on the target. You can target one additional humanoid for each spell slot level above 2nd."
+    "description": "Choose a humanoid that you can see within range. The target must succeed on a Wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another Wisdom saving throw; on a success, the spell ends on the target. You can target one additional humanoid for each spell slot level above 2nd.",
+    "save": { "ability": "wis", "effect": "no effect on a success" }
   },
   {
     "id": "invisibility",
@@ -364,7 +369,9 @@
     "components": { "verbal": true, "somatic": true, "material": "several seeds of any moonseed plant and a piece of opalescent feldspar" },
     "duration": "1 minute",
     "concentration": true,
-    "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-tall cylinder centered on a point within range. Any creature that enters the spell's area for the first time on a turn or starts its turn there must make a Constitution saving throw, taking 2d10 radiant damage on a failed save or half as much on a successful one."
+    "description": "A silvery beam of pale light shines down in a 5-foot-radius, 40-foot-tall cylinder centered on a point within range. Any creature that enters the spell's area for the first time on a turn or starts its turn there must make a Constitution saving throw, taking 2d10 radiant damage on a failed save or half as much on a successful one.",
+    "save": { "ability": "con", "effect": "half damage on a success" },
+    "damage": { "dice": "2d10", "damage_type": "radiant" }
   },
   {
     "id": "pass-without-trace",
@@ -414,7 +421,8 @@
     "components": { "verbal": true, "somatic": true },
     "duration": "1 minute",
     "concentration": true,
-    "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. At the end of each of the target's turns, it can make a Constitution saving throw to end the spell."
+    "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack. On a hit, the target deals only half damage with weapon attacks that use Strength until the spell ends. At the end of each of the target's turns, it can make a Constitution saving throw to end the spell.",
+    "attack": "ranged"
   },
   {
     "id": "rope-trick",
@@ -438,7 +446,9 @@
     "range": "120 feet",
     "components": { "verbal": true, "somatic": true },
     "duration": "Instantaneous",
-    "description": "You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray; on a hit, the target takes 2d6 fire damage. You create one additional ray for each spell slot level above 2nd."
+    "description": "You create three rays of fire and hurl them at targets within range. You can hurl them at one target or several. Make a ranged spell attack for each ray; on a hit, the target takes 2d6 fire damage. You create one additional ray for each spell slot level above 2nd.",
+    "attack": "ranged",
+    "damage": { "dice": "2d6", "damage_type": "fire" }
   },
   {
     "id": "see-invisibility",
@@ -462,7 +472,9 @@
     "range": "60 feet",
     "components": { "verbal": true, "somatic": true, "material": "a chip of mica" },
     "duration": "Instantaneous",
-    "description": "A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw, taking 3d8 thunder damage on a failed save or half as much on a successful one. A creature made of inorganic material has disadvantage on this saving throw."
+    "description": "A sudden loud ringing noise, painfully intense, erupts from a point of your choice within range. Each creature in a 10-foot-radius sphere centered on that point must make a Constitution saving throw, taking 3d8 thunder damage on a failed save or half as much on a successful one. A creature made of inorganic material has disadvantage on this saving throw.",
+    "save": { "ability": "con", "effect": "half damage on a success" },
+    "damage": { "dice": "3d8", "damage_type": "thunder" }
   },
   {
     "id": "silence",
@@ -501,7 +513,9 @@
     "range": "60 feet",
     "components": { "verbal": true, "somatic": true },
     "duration": "1 minute",
-    "description": "You create a floating, spectral weapon within range that lasts for the duration or until you cast this spell again. As a bonus action on your turn, you can move the weapon up to 20 feet and repeat the attack against a creature within 5 feet of it. The weapon deals 1d8 + your spellcasting ability modifier force damage on a hit."
+    "description": "You create a floating, spectral weapon within range that lasts for the duration or until you cast this spell again. As a bonus action on your turn, you can move the weapon up to 20 feet and repeat the attack against a creature within 5 feet of it. The weapon deals 1d8 + your spellcasting ability modifier force damage on a hit.",
+    "attack": "melee",
+    "damage": { "dice": "1d8", "damage_type": "force" }
   },
   {
     "id": "suggestion",

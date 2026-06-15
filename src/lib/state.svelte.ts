@@ -507,11 +507,37 @@ class AppState {
    * - Leveled spells: find an available slot; warn if none; expend and toast.
    * - Concentration spells: always update the concentration tracker.
    */
-  async castSpell(spell: { id: string; name: string; level: number; concentration: boolean }) {
+  async castSpell(spell: {
+    id: string;
+    name: string;
+    level: number;
+    concentration: boolean;
+    attack?: string | null;
+    save?: { ability: string; effect: string } | null;
+    damage?: { dice: string; damage_type: string } | null;
+  }) {
     if (!this.sheet) return;
+
+    // Build a compact combat suffix, e.g. "spell atk +5, 1d10 fire"
+    const sc = (this.computed?.spellcasting as Array<{ save_dc: number | null; attack_bonus: number | null }> | undefined)?.[0];
+    const abilAbbr: Record<string, string> = { str: 'STR', dex: 'DEX', con: 'CON', int: 'INT', wis: 'WIS', cha: 'CHA' };
+    let combatSuffix = '';
+    if (spell.attack != null && sc) {
+      const bonus = sc.attack_bonus != null ? (sc.attack_bonus >= 0 ? '+' + sc.attack_bonus : String(sc.attack_bonus)) : '?';
+      combatSuffix = `spell atk ${bonus}`;
+    } else if (spell.save != null && sc) {
+      const abbr = abilAbbr[spell.save.ability] ?? spell.save.ability.toUpperCase();
+      combatSuffix = `${abbr} save DC ${sc.save_dc ?? '?'}`;
+    }
+    if (spell.damage != null) {
+      const dmg = `${spell.damage.dice} ${spell.damage.damage_type}`;
+      combatSuffix = combatSuffix ? `${combatSuffix}, ${dmg}` : dmg;
+    }
+
     if (spell.level === 0) {
       if (spell.concentration) this.setConcentration(spell.name);
-      toasts.push('Cast ' + spell.name, 'good');
+      const msg = combatSuffix ? `Cast ${spell.name} — ${combatSuffix}` : `Cast ${spell.name}`;
+      toasts.push(msg, 'good');
       return;
     }
     // Find the lowest available slot at the spell's level.
@@ -525,7 +551,8 @@ class AppState {
     }
     await this.expendSlot(spell.level);
     if (spell.concentration) this.setConcentration(spell.name);
-    toasts.push('Cast ' + spell.name + ' (L' + spell.level + ' slot)', 'good');
+    const baseMsg = `Cast ${spell.name} (L${spell.level} slot)`;
+    toasts.push(combatSuffix ? `${baseMsg} — ${combatSuffix}` : baseMsg, 'good');
   }
 
   // ---- play: hit dice ----

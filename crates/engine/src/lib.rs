@@ -53,5 +53,5 @@ pub use sheet::{
     ArmorItem, ArmorKind, CharacterSheet, ClassEntry, DeathSaves, Equipment, HpState, Meta,
     RecordedChoice, WeaponInstance,
 };
-pub use spell::{SpellComponents, SpellDef, SpellSchool};
+pub use spell::{SpellAttack, SpellComponents, SpellDamage, SpellDef, SpellSave, SpellSchool};
 pub use value::{Dice, ValueExpr};
