@@ -131,6 +131,8 @@ pub struct ComputedCharacter {
     pub weapons: Vec<WeaponView>,
     pub masteries_known: i32,
     pub effects: Vec<EffectView>,
+    /// Active conditions on the character (e.g. "poisoned", "frightened").
+    pub conditions: Vec<String>,
     pub concentration: Option<String>,
     pub hit_dice: Vec<HitDiePool>,
     pub features: Vec<ResolvedFeature>,
@@ -366,6 +368,7 @@ pub fn compute(sheet: &CharacterSheet, content: &ContentDb) -> ComputedCharacter
         weapons,
         masteries_known,
         effects,
+        conditions: sheet.conditions.clone(),
         concentration: sheet.concentration.clone(),
         hit_dice: built.hit_dice.clone(),
         features: built.features.clone(),

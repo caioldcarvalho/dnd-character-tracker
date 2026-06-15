@@ -4,21 +4,22 @@
 
   // The 2024 condition list as toggle chips. Exhaustion is intentionally
   // omitted here — it has its own 0–6 stepper below.
-  const CONDITIONS: { id: string; name: string }[] = [
-    { id: 'blinded', name: 'Blinded' },
+  // `effect` is shown under the chip when the condition is active.
+  const CONDITIONS: { id: string; name: string; effect?: string }[] = [
+    { id: 'blinded', name: 'Blinded', effect: 'dis on attacks' },
     { id: 'charmed', name: 'Charmed' },
     { id: 'deafened', name: 'Deafened' },
-    { id: 'frightened', name: 'Frightened' },
+    { id: 'frightened', name: 'Frightened', effect: 'dis on attacks & checks' },
     { id: 'grappled', name: 'Grappled' },
     { id: 'incapacitated', name: 'Incapacitated' },
-    { id: 'invisible', name: 'Invisible' },
-    { id: 'paralyzed', name: 'Paralyzed' },
-    { id: 'petrified', name: 'Petrified' },
-    { id: 'poisoned', name: 'Poisoned' },
-    { id: 'prone', name: 'Prone' },
-    { id: 'restrained', name: 'Restrained' },
-    { id: 'stunned', name: 'Stunned' },
-    { id: 'unconscious', name: 'Unconscious' }
+    { id: 'invisible', name: 'Invisible', effect: 'adv on attacks' },
+    { id: 'paralyzed', name: 'Paralyzed', effect: 'dis on STR/DEX saves*' },
+    { id: 'petrified', name: 'Petrified', effect: 'dis on STR/DEX saves*' },
+    { id: 'poisoned', name: 'Poisoned', effect: 'dis on attacks & checks' },
+    { id: 'prone', name: 'Prone', effect: 'dis on attacks' },
+    { id: 'restrained', name: 'Restrained', effect: 'dis on attacks & DEX save' },
+    { id: 'stunned', name: 'Stunned', effect: 'dis on STR/DEX saves*' },
+    { id: 'unconscious', name: 'Unconscious', effect: 'dis on STR/DEX saves*' }
   ];
 
   const c = $derived(app.computed);
@@ -60,15 +61,22 @@
         >
         {#each CONDITIONS as cond}
           {@const on = hasCondition(cond.id)}
-          <button
-            type="button"
-            onclick={() => app.toggleCondition(cond.id)}
-            class="text-[10px] px-1.5 py-0.5 rounded border transition-colors {on
-              ? 'border-[var(--color-bad)] text-[var(--color-bad)] bg-[var(--color-bad)]/15'
-              : 'border-[var(--color-border)] text-[var(--color-muted)] bg-[var(--color-panel-2)] hover:border-[var(--color-bad)]'}"
-          >
-            {cond.name}
-          </button>
+          <span class="inline-flex flex-col items-start gap-0">
+            <button
+              type="button"
+              onclick={() => app.toggleCondition(cond.id)}
+              class="text-[10px] px-1.5 py-0.5 rounded border transition-colors {on
+                ? 'border-[var(--color-bad)] text-[var(--color-bad)] bg-[var(--color-bad)]/15'
+                : 'border-[var(--color-border)] text-[var(--color-muted)] bg-[var(--color-panel-2)] hover:border-[var(--color-bad)]'}"
+            >
+              {cond.name}
+            </button>
+            {#if on && cond.effect}
+              <span class="text-[9px] text-[var(--color-bad)] opacity-80 px-1 leading-tight"
+                >{cond.effect}</span
+              >
+            {/if}
+          </span>
         {/each}
       </div>
 
