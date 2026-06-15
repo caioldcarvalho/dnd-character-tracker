@@ -15,4 +15,8 @@ import type { SpellcastingView } from "./SpellcastingView";
 import type { StatBreakdown } from "./StatBreakdown";
 import type { WeaponView } from "./WeaponView";
 
-export type ComputedCharacter = { name: string, level: number, proficiency_bonus: number, max_hp: StatBreakdown, current_hp: number, temp_hp: number, armor_class: StatBreakdown, initiative: StatBreakdown, speeds: Array<SpeedView>, abilities: Array<AbilityView>, saves: Array<SaveView>, skills: Array<SkillView>, passives: Array<PassiveView>, resources: Array<ResourceView>, spell_slots: Array<SpellSlotView>, spellcasting: Array<SpellcastingView>, weapons: Array<WeaponView>, masteries_known: number, effects: Array<EffectView>, concentration: string | null, hit_dice: Array<HitDiePool>, features: Array<ResolvedFeature>, pending_choices: Array<PendingChoice>, carrying_capacity: number, errors: Array<EvalError>, };
+export type ComputedCharacter = { name: string, level: number, proficiency_bonus: number, max_hp: StatBreakdown, current_hp: number, temp_hp: number, armor_class: StatBreakdown, initiative: StatBreakdown, speeds: Array<SpeedView>, abilities: Array<AbilityView>, saves: Array<SaveView>, skills: Array<SkillView>, passives: Array<PassiveView>, resources: Array<ResourceView>, spell_slots: Array<SpellSlotView>, spellcasting: Array<SpellcastingView>, weapons: Array<WeaponView>, masteries_known: number, effects: Array<EffectView>, 
+/**
+ * Active conditions on the character (e.g. "poisoned", "frightened").
+ */
+conditions: Array<string>, concentration: string | null, hit_dice: Array<HitDiePool>, features: Array<ResolvedFeature>, pending_choices: Array<PendingChoice>, carrying_capacity: number, errors: Array<EvalError>, };

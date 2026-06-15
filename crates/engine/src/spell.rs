@@ -7,6 +7,37 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::ids::Ability;
+
+/// Whether a spell's attack is melee or ranged.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SpellAttack {
+    Melee,
+    Ranged,
+}
+
+/// The saving throw a spell forces and the effect on a success.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SpellSave {
+    /// The ability the TARGET uses for its saving throw.
+    pub ability: Ability,
+    /// What happens on a successful save, e.g. `"half damage on a success"`.
+    pub effect: String,
+}
+
+/// Damage a spell deals on a hit or failed save.
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SpellDamage {
+    /// Dice expression, e.g. `"1d10"`, `"3d6"`, `"3 × 1d4+1"`.
+    pub dice: String,
+    /// Damage type, e.g. `"fire"`, `"cold"`, `"healing"`.
+    pub damage_type: String,
+}
+
 /// The eight schools of magic in D&D 2024.
 #[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -63,4 +94,13 @@ pub struct SpellDef {
     pub ritual: bool,
     /// Rules text for the spell (1–3 sentences for the proof set).
     pub description: String,
+    /// Whether the spell requires a spell attack roll, and if so whether melee or ranged.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attack: Option<SpellAttack>,
+    /// Saving throw the target must make (if any).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub save: Option<SpellSave>,
+    /// Damage (or healing) the spell deals.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub damage: Option<SpellDamage>,
 }

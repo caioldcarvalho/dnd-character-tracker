@@ -18,6 +18,7 @@
   import GearPanel from '$lib/components/sections/GearPanel.svelte';
   import SpellsView from '$lib/components/sections/SpellsView.svelte';
   import NotesView from '$lib/components/sections/NotesView.svelte';
+  import Actions from '$lib/components/panels/Actions.svelte';
   import { app, inTauri } from '$lib/state.svelte';
   import * as ipc from '$lib/ipc';
   import { onMount } from 'svelte';
@@ -84,7 +85,8 @@
       {:else if app.computed}
         <!-- Sheet mode: dense cockpit. Full-width header strips, then a multi-column
              masonry so variable-height panels pack with no holes and reflow. -->
-        <div class="flex flex-col gap-2">
+        <Actions />
+        <div class="flex flex-col gap-2 mt-2">
           <Abilities />
           <RestBar />
         </div>
@@ -107,10 +109,8 @@
       {/if}
     </main>
 
-    <!-- Inspector only where stat breakdowns are relevant; on Notes/Spells it
-         would just show a stale, unrelated breakdown and waste the width. -->
-    {#if app.sheet && (app.section === 'sheet' || app.section === 'build' || app.section === 'gear')}
-      <Inspector />
-    {/if}
+    <!-- Inspector renders itself only when something is selected (app.inspecting != null).
+         It's a fixed overlay so it never takes layout space from the cockpit. -->
+    <Inspector />
   </div>
 </div>

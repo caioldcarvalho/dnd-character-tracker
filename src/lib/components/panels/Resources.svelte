@@ -4,7 +4,6 @@
   import { app } from '../../state.svelte';
 
   const resources = $derived(app.computed?.resources ?? []);
-  const hitDice = $derived(app.computed?.hit_dice ?? []);
 
   function rechargeLabel(r: string): string {
     return { 'short-rest': 'S', 'long-rest': 'L', dawn: '☀', special: '∗' }[r] ?? '?';
@@ -18,14 +17,10 @@
     if (r.current >= r.max) return;
     app.restoreResource(r.id, r.max, n);
   }
-  function spendHd(hd: any) {
-    if (hd.total - hd.spent <= 0) return;
-    app.spendHitDie(hd.sides, hd.total);
-  }
 </script>
 
 <Card title="Resources & Dice">
-  {#if !app.computed || (resources.length === 0 && hitDice.length === 0)}
+  {#if !app.computed || resources.length === 0}
     <p class="text-[11px] text-[var(--color-muted)] py-2 text-center">No resource pools.</p>
   {:else}
     <ul class="flex flex-col gap-1.5">
@@ -83,28 +78,6 @@
           {/if}
         </li>
       {/each}
-
-      {#if hitDice.length}
-        <li class="flex items-center gap-2 pt-1 border-t border-[var(--color-border)]/60">
-          <span class="text-[9px] w-4 text-center text-[var(--color-muted)]">HD</span>
-          <span class="flex-1 text-[11px]">Hit Dice</span>
-          <span class="flex gap-1.5 num text-[11px]">
-            {#each hitDice as hd}
-              <button
-                type="button"
-                onclick={() => spendHd(hd)}
-                disabled={hd.total - hd.spent <= 0}
-                title="Spend a d{hd.sides} hit die"
-                aria-label="Spend d{hd.sides} hit die"
-                class="rounded px-1 border border-transparent hover:border-[var(--color-accent)] hover:text-[var(--color-ink)] disabled:opacity-40 disabled:hover:border-transparent"
-                >{hd.total - hd.spent}<span class="text-[var(--color-muted)]"
-                  >/{hd.total}d{hd.sides}</span
-                ></button
-              >
-            {/each}
-          </span>
-        </li>
-      {/if}
     </ul>
   {/if}
 </Card>

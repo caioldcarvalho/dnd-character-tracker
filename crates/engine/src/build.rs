@@ -87,6 +87,7 @@ pub fn build(sheet: &CharacterSheet, content: &ContentDb) -> Built {
     b.spellcasting();
     b.proficiency_bonuses();
     b.exhaustion();
+    b.conditions();
     b.resources_to_stats();
     b.finish()
 }
@@ -763,6 +764,118 @@ impl<'a> Builder<'a> {
         );
     }
 
+    /// Apply advantage/disadvantage effects for the 2024 conditions currently
+    /// set on `sheet.conditions`. Only the *character's own* rolls are affected
+    /// here (e.g. "attacks against you" effects are an enemy-side concern and
+    /// are not modeled).
+    ///
+    /// Multiple conditions + exhaustion compose correctly because every source
+    /// contributes an independent `D20Effect` entry; the evaluator applies
+    /// 2024's "one adv + one dis = flat" rule regardless of count.
+    fn conditions(&mut self) {
+        use crate::contribution::D20Effect;
+
+        for cond in &self.sheet.conditions.clone() {
+            let src = SourceRef::Condition { id: cond.clone() };
+            let dis = |target: StatId| -> Contribution {
+                Contribution::d20(target, D20Effect::Disadvantage).note(title_case(cond))
+            };
+            let adv = |target: StatId| -> Contribution {
+                Contribution::d20(target, D20Effect::Advantage).note(title_case(cond))
+            };
+
+            match cond.as_str() {
+                // Poisoned: disadvantage on attack rolls and ability checks.
+                "poisoned" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), dis(StatId::WeaponAttackBonus(kind)));
+                    }
+                    // SpellAttackBonus is per CastingSource — cover all sources.
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), dis(StatId::SpellAttackBonus(cs)));
+                    }
+                    // Raw (un-skilled) ability checks are not separate StatIds;
+                    // SkillBonus is the canonical ability-check stat for all skills.
+                    for sk in Skill::ALL {
+                        self.push(src.clone(), dis(StatId::SkillBonus(sk)));
+                    }
+                }
+
+                // Frightened: disadvantage on attack rolls and ability checks
+                // while the source of fear is visible. We can't model LOS, so
+                // we apply while the condition is active.
+                "frightened" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), dis(StatId::WeaponAttackBonus(kind)));
+                    }
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), dis(StatId::SpellAttackBonus(cs)));
+                    }
+                    for sk in Skill::ALL {
+                        self.push(src.clone(), dis(StatId::SkillBonus(sk)));
+                    }
+                }
+
+                // Prone: disadvantage on attack rolls.
+                "prone" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), dis(StatId::WeaponAttackBonus(kind)));
+                    }
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), dis(StatId::SpellAttackBonus(cs)));
+                    }
+                }
+
+                // Restrained: disadvantage on attack rolls and DEX saving throws.
+                "restrained" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), dis(StatId::WeaponAttackBonus(kind)));
+                    }
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), dis(StatId::SpellAttackBonus(cs)));
+                    }
+                    self.push(src.clone(), dis(StatId::SavingThrow(Ability::Dex)));
+                }
+
+                // Blinded: disadvantage on attack rolls.
+                "blinded" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), dis(StatId::WeaponAttackBonus(kind)));
+                    }
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), dis(StatId::SpellAttackBonus(cs)));
+                    }
+                }
+
+                // Invisible: advantage on attack rolls.
+                "invisible" => {
+                    for kind in [WeaponKind::Melee, WeaponKind::Ranged] {
+                        self.push(src.clone(), adv(StatId::WeaponAttackBonus(kind)));
+                    }
+                    for cs in self.spellcasting.iter().map(|s| s.source.clone()).collect::<Vec<_>>() {
+                        self.push(src.clone(), adv(StatId::SpellAttackBonus(cs)));
+                    }
+                }
+
+                // Paralyzed / Stunned / Unconscious / Petrified: the true rule
+                // is an automatic fail on STR and DEX saves, but auto-fail is a
+                // stronger guarantee than we can express via the D20 channel today.
+                // Known simplification: we apply disadvantage on STR and DEX saves
+                // instead. Auto-fail (e.g. for death saves while unconscious) is
+                // handled separately by the HP/death-save UI.
+                "paralyzed" | "stunned" | "unconscious" | "petrified" => {
+                    self.push(src.clone(), dis(StatId::SavingThrow(Ability::Str)));
+                    self.push(src.clone(), dis(StatId::SavingThrow(Ability::Dex)));
+                }
+
+                // Conditions with no modeled roll effect (charmed, deafened,
+                // grappled, incapacitated). They affect narrative/movement but not
+                // the stats we track.
+                _ => {}
+            }
+        }
+    }
+
     fn resources_to_stats(&mut self) {
         let defs: Vec<ResourceDef> = self.resources.values().cloned().collect();
         for def in defs {
@@ -813,4 +926,13 @@ fn parse_skill(s: &str) -> Option<Skill> {
 }
 fn parse_ability(s: &str) -> Option<Ability> {
     serde_json::from_value(serde_json::Value::String(s.to_string())).ok()
+}
+
+/// "poisoned" → "Poisoned" — used as the source label on d20 effects.
+fn title_case(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
+    }
 }
